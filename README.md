@@ -7,11 +7,10 @@ The brief for the project was a 2D product assembly line game which had a series
 met such as allowing for mouse input, both frame-based animations and just using rotations and other things.
 
 ## Screenshots:
-Screenshot of actual gameplay of the game:
-![[share/Gameplay.png]]
 
-Tutorial screenshot included in the game:
-![[share/Tutorial.png]]
+![Screenshot of actual gameplay of the game](./share/Gameplay.png)
+
+![Tutorial screenshot included in the game](./share/Tutorial.png)
 
 ## Credits:
  - https://opengameart.org/content/assets-free-space-modular-buildings-kit
