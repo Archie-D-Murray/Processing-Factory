@@ -1,6 +1,6 @@
 ## Project:
 This project was a submission for a first year university assignment focused on teaching the basics of
-programming using the [Processing 4.0](processing.org) library, I then adapted the project from a processing
+programming using the [Processing 4.0](https://processing.org) library, I then adapted the project from a processing
 project into proper Java so I could use it with a proper IDE.
 
 The brief for the project was a 2D product assembly line game which had a series of requirements that had to be
