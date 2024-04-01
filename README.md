@@ -10,13 +10,8 @@ met such as allowing for mouse input, both frame-based animations and just using
 Screenshot of actual gameplay of the game:
 ![[share/Gameplay.png]]
 
-<<<<<<< HEAD
-![Tutorial screenshot included in the game](./share/Tutorial.png)
-
-=======
 Tutorial screenshot included in the game:
 ![[share/Tutorial.png]]
->>>>>>> f10e33bebbc5c03a744f4bbaf44f184c74835d47
 
 ## Credits:
  - https://opengameart.org/content/assets-free-space-modular-buildings-kit
