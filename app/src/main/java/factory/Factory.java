@@ -220,6 +220,14 @@ public class Factory extends PApplet {
     public void image(PImage image, PVector position) {
         image(image, position.x, position.y);
     }
+    
+    public void image(PImage image, PVector position, float rotation) {
+        pushMatrix();
+        translate(position.x, position.y);
+        rotate(rotation);
+        image(image, 0f, 0f);
+        popMatrix();
+    }
 
     public static float remap(float newMin, float newMax, float oldMin, float oldMax, float value) {
         return lerp(newMin, newMax, invLerp(oldMin, oldMax, value));
@@ -228,5 +236,4 @@ public class Factory extends PApplet {
     public void line(PVector pos1, PVector pos2) {
         line(pos1.x, pos1.y, pos2.x, pos2.y);
     }
-
 }

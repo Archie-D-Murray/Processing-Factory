@@ -1,8 +1,11 @@
 package factory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import processing.core.PApplet;
+import processing.core.PImage;
 import processing.core.PVector;
 
 /**
@@ -10,60 +13,135 @@ import processing.core.PVector;
  * Handles moving products to relevant positions and rendering them
  */
 public class Conveyor {
-  final private int colour = 0xFF444444;
-  private float size = 20f;
-  private PVector[] positions;
-  
-  public ArrayList<Product> conveyorItems;
-  public ArrayList<Product> productsAwaitingReceiver;
-  float conveyorSpeed;
-  
+    final private int colour = 0xFF444444;
+    final private float BELT_SEGMENTS = 0.025f;
+    private float size = 20f;
+    private PVector[] positions;
+    private ArrayList<ConveyorSegment> conveyorSegments;
+    private ArrayList<ConveyorSegment> sendToFront;
+    public ArrayList<Product> conveyorItems;
+    public ArrayList<Product> productsAwaitingReceiver;
+    float conveyorSpeed;
+
   public Conveyor(PVector[] positions, float speed) {
     this.positions = positions;
     this.conveyorSpeed = speed;
     this.conveyorItems = new ArrayList<Product>();
     productsAwaitingReceiver = new ArrayList<Product>();
+    conveyorSegments = new ArrayList<ConveyorSegment>();
+    sendToFront = new ArrayList<ConveyorSegment>(1);
+    PImage beltSegment = Game.sketch.imageDataBase.get("BeltSegment.png");
+    float beltWidth = beltLength() / (beltLength() * BELT_SEGMENTS);
+    beltSegment.resize((int) beltWidth, (int) (beltSegment.height * (beltWidth / beltSegment.width)));
+    System.out.println("Belt: " + String.join(", ", Arrays.stream(positions).map(pos -> pos.toString()).collect(Collectors.toList())));
+    for (float i = beltLength(); i >= (float) beltSegment.width; i -= (float) beltSegment.width) {
+        conveyorSegments.add(new ConveyorSegment(beltSegment, positionFromProgress(i), rotationFromProgress(i), indexFromProgress(i)));
+    }
   }
-  
-  /**
-   * Adds move vector to position of all products then renders them
-   */
-  public void moveConveyorItems() {
-    renderBelt();
-    for (Product product : conveyorItems) {
-      if (PVector.dist(product.position, positions[product.targetPosIndex]) < PApplet.EPSILON) { // Is product at target position
-        if (product.targetPosIndex < positions.length - 1) { // If product is not at end of conveyor
-          product.targetPosIndex++;
-        } else {
-          productsAwaitingReceiver.add(product);
+
+    /**
+     * Adds move vector to position of all products then renders them
+     */
+    public void moveConveyorItems() {
+        renderBelt();
+        for (Product product : conveyorItems) {
+            // Is product at target position
+            if (PVector.dist(product.position, positions[product.targetPosIndex]) < PApplet.EPSILON) {
+                if (product.targetPosIndex < positions.length - 1) { // If product is not at end of conveyor
+                    product.targetPosIndex++;
+                } else {
+                    productsAwaitingReceiver.add(product);
+                }
+            }
+
+            // Move towards takes a maximum move delta to interpolate from first position to
+            // second
+            product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed); // Move
+                                                                                                                        // to
+                                                                                                                        // new
+                                                                                                                        // pos
+            product.render();
         }
-      }
-      
-      // Move towards takes a maximum move delta to interpolate from first position to second
-      product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed); //Move to new pos
-      product.render();
+        conveyorItems.removeAll(productsAwaitingReceiver); // Remove products that are being processed
     }
-    conveyorItems.removeAll(productsAwaitingReceiver); // Remove products that are being processed
-  }
-  
-  /**
-   * Adds product to start of belt
-   */
-  public void addProduct(Product product) {
-    product.position = positions[0];
-    conveyorItems.add(product);
-  }
-  
-  /**
-   * Belt is rendered by drawing lines between a series of points
-   */
-  private void renderBelt() {
-    Game.sketch.strokeWeight(size);
-    Game.sketch.stroke(colour);
-    for (int i = 0; i < positions.length - 1; i++) { //Last index has no next point to draw to
-      Game.sketch.line(positions[i], positions[i + 1]); // Using line allows for diagonal conveyor belts
+
+    /**
+     * Adds product to start of belt
+     */
+    public void addProduct(Product product) {
+        product.position = positions[0];
+        conveyorItems.add(product);
     }
-    Game.sketch.strokeWeight(0f); // Make sure not to create strange behaviour for other shape rendering
-    Game.sketch.stroke(0x00FFFFFF);
-  }
+
+    /**
+     * Belt is rendered by drawing lines between a series of points
+     */
+    private void renderBelt() {
+        sendToFront.clear();
+        for (ConveyorSegment segment : conveyorSegments) {
+            segment.update(positions);
+            if (segment.sendToFront) {
+                sendToFront.add(segment);
+            }
+        }
+        for (ConveyorSegment segment : sendToFront) {
+            conveyorSegments.remove(segment);
+            conveyorSegments.add(segment);
+            segment.sendToFront = false;
+        }
+        // Game.sketch.strokeWeight(size / 2);
+        // Game.sketch.stroke(colour);
+        // for (int i = 0; i < positions.length - 1; i++) { // Last index has no next point to draw to
+        //     Game.sketch.line(positions[i], positions[i + 1]); // Using line allows for diagonal conveyor belts
+        // }
+        // Game.sketch.strokeWeight(0f); // Make sure not to create strange behaviour for other shape rendering
+        // Game.sketch.stroke(0x00FFFFFF);
+    }
+
+    private float beltLength() {
+        float length = 0f;
+        for (int i = 0; i < positions.length - 1; i++) {
+            length += PVector.dist(positions[i], positions[i + 1]);
+        }
+        return length;
+    }
+
+    private PVector positionFromProgress(float progress) {
+        float distance = 0f;
+        for (int i = 0; i <= positions.length - 1; i++) {
+            float pointDistance = PVector.dist(positions[i], positions[i + 1]);
+            if (distance + pointDistance >= progress) {
+                return PVector.lerp(positions[i], positions[i + 1], (progress - distance) / pointDistance);
+            } else {
+                distance += pointDistance;
+            }
+        }
+        return null;
+    }
+
+    private float rotationFromProgress(float progress) {
+        float distance = 0f;
+        for (int i = 0; i <= positions.length - 1; i++) {
+            float pointDistance = PVector.dist(positions[i], positions[i + 1]);
+            if (distance + pointDistance >= progress) {
+                return PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[i + 1], positions[i]).normalize());
+            } else {
+                distance += pointDistance;
+            }
+        }
+        return 0f;
+    }
+
+    private int indexFromProgress(float progress) {
+        float distance = 0f;
+        for (int i = 0; i <= positions.length - 2; i++) {
+            float pointDistance = PVector.dist(positions[i], positions[i + 1]);
+            if (distance + pointDistance >= progress) {
+                return i + 1;
+            } else {
+                distance += pointDistance;
+            }
+        } 
+        return 1;
+    }
 }

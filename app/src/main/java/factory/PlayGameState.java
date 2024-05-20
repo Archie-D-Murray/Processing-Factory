@@ -11,7 +11,7 @@ import processing.core.PVector;
  * setup functions to provide configurablity to levels
  */
 public abstract class PlayGameState implements IState {
-
+  protected Crane crane;
   protected ComponentFactory componentFactory;
   protected ProductFactory productFactory;
   protected ProductReceiver reciever;
@@ -45,6 +45,7 @@ public abstract class PlayGameState implements IState {
     initSelectOptions();
     initProductOptions();
     conveyor = new Conveyor(conveyorPositions, 2f);
+    crane = new Crane();
     closestSocket = null;
   }
 
@@ -58,6 +59,7 @@ public abstract class PlayGameState implements IState {
     drawUI();
     Game.sketch.animationPool.update();
     checkAsteroidCollision();
+    crane.update();
   }
 
   @Override public void onExit() { }
@@ -144,7 +146,7 @@ public abstract class PlayGameState implements IState {
       }
       toRemove.add(product);
       product = null;
-      //TODO: Play money animation
+      // TODO: Play money animation
     }
     conveyor.productsAwaitingReceiver.removeAll(toRemove);
   }
@@ -175,6 +177,7 @@ public abstract class PlayGameState implements IState {
           Game.sketch.fill(0xAA00FF00);
           Game.sketch.rect(worldSpaceSocketPos.x, worldSpaceSocketPos.y, 20f, 20f);
           if (Game.sketch.mousePressed) {
+            crane.setTarget(Game.sketch.getMousePosition());
             closestSocket.component = playerSelection.component;
             // Spark effect when adding component
             Game.sketch.animationPool.play(AnimationType.COMPONENT_ADD, closestProduct, closestSocket);
@@ -212,6 +215,7 @@ public abstract class PlayGameState implements IState {
       }
       if (componentOptions[i].mouseTouching(position) && Game.sketch.mousePressed && mouseInputDelay == 0f) {
         playerSelection = new PlayerSelection(componentOptions[i].type, componentFactory);
+        crane.setTarget(Game.sketch.getMousePosition());
         mouseInputDelay = Factory.MOUSE_DELAY;
       }
     }
