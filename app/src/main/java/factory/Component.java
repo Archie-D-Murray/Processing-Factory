@@ -27,6 +27,15 @@ public abstract class Component implements IComponent {
     Game.sketch.image(image, 0f, 0f);
     Game.sketch.popMatrix();
   }
+
+  public void draw(PVector position, float scale) {
+      Game.sketch.pushMatrix();
+      Game.sketch.scale(scale);
+      Game.sketch.translate(new PVector(position.x, position.y).div(scale));
+      Game.sketch.rotate(rotation);
+      Game.sketch.image(image, 0f, 0f);
+      Game.sketch.popMatrix();
+  }
   
   public abstract BoundingBox getBoundingBox(PVector position);
 }

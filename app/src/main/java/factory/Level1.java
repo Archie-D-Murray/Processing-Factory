@@ -27,31 +27,31 @@ public class Level1 extends PlayGameState {
     if (Game.sketch.key == PApplet.CODED) {
       switch (Game.sketch.keyCode) {
       case PApplet.RIGHT:
-        if (playerSelection == null) {
+        if (!crane.hasComponent()) {
           break;
         }
-        playerSelection.component.rotation = PApplet.HALF_PI;
+        crane.getComponent().rotation = PApplet.HALF_PI;
         break;
 
       case PApplet.LEFT:
-        if (playerSelection == null) {
+        if (!crane.hasComponent()) {
           break;
         }
-        playerSelection.component.rotation = 3f * PApplet.HALF_PI;
+        crane.getComponent().rotation = 3f * PApplet.HALF_PI;
         break;
 
       case PApplet.UP:
-        if (playerSelection == null) {
+        if (!crane.hasComponent()) {
           break;
         }
-        playerSelection.component.rotation = 0f;
+        crane.getComponent().rotation = 0f;
         break;
 
       case PApplet.DOWN:
-        if (playerSelection == null) {
+        if (!crane.hasComponent()) {
           break;
         }
-        playerSelection.component.rotation = PApplet.PI;
+        crane.getComponent().rotation = PApplet.PI;
         break;
 
       default:

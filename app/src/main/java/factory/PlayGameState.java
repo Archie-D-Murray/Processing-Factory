@@ -45,7 +45,7 @@ public abstract class PlayGameState implements IState {
     initSelectOptions();
     initProductOptions();
     conveyor = new Conveyor(conveyorPositions, 2f);
-    crane = new Crane();
+    crane = new Crane(componentOptions);
     closestSocket = null;
   }
 
@@ -114,14 +114,14 @@ public abstract class PlayGameState implements IState {
    * Returns closest product to mouse on conveyor
    */
   protected Product getClosestToMouse() {
-    if (playerSelection == null) {
+    if (!crane.hasComponent()) {
       return null;
     }
-    float closest = Float.MAX_VALUE;
+    float closest = 100f;
     PVector mousePos = Game.sketch.getMousePosition();
     Product closestProduct = null;
     for (Product product : conveyor.conveyorItems) {
-      if (PVector.dist(mousePos, product.position) < closest && playerSelection.component.getBoundingBox(Game.sketch.getMousePosition()).isOverlapping(product.getBoundingBox())) {
+      if (PVector.dist(mousePos, product.position) < closest && product.getBoundingBox().isOverlappingPoint(mousePos)) {
         closestProduct = product;
         closest = PVector.dist(mousePos, product.position);
       }
@@ -157,18 +157,14 @@ public abstract class PlayGameState implements IState {
    * if player successfully adds component
    */
   protected void highlightComponentSockets() {
-    if (playerSelection != null) {
-      playerSelection.component.draw(Game.sketch.getMousePosition());
-    }
     //Mouse logic
     Product closestProduct = getClosestToMouse();
-    if (closestProduct != null && playerSelection != null) {
-
+    if (closestProduct != null && crane.hasComponent()) {
       //Find closest ComponentSocket
       closestSocket = closestProduct.getClosestSocket();
       if (closestSocket != null) {
         PVector worldSpaceSocketPos = PVector.add(closestSocket.offset, closestProduct.position);
-        if (closestProduct.checkCollisionAtSocket(playerSelection.component, closestSocket)) {
+        if (closestProduct.checkCollisionAtSocket(crane.getComponent(), closestSocket)) {
           //Highlight invalid component socket
           Game.sketch.fill(0xAAFF0000);
           Game.sketch.rect(worldSpaceSocketPos.x, worldSpaceSocketPos.y, 20f, 20f);
@@ -176,23 +172,10 @@ public abstract class PlayGameState implements IState {
           //Highlight valid component socket
           Game.sketch.fill(0xAA00FF00);
           Game.sketch.rect(worldSpaceSocketPos.x, worldSpaceSocketPos.y, 20f, 20f);
-          if (Game.sketch.mousePressed) {
-            crane.setTarget(Game.sketch.getMousePosition());
-            closestSocket.component = playerSelection.component;
-            // Spark effect when adding component
-            Game.sketch.animationPool.play(AnimationType.COMPONENT_ADD, closestProduct, closestSocket);
-            switch (playerSelection.type) {
-              case GUN: // Attach animations to gun component
-                Game.sketch.animationPool.play(AnimationType.GUN_FLAME, closestProduct, closestSocket);
-                break;
-                
-              case SHIELD: // Attach animations to shield component
-                Game.sketch.animationPool.play(AnimationType.SHIELD_PARTICLES, closestProduct, closestSocket);
-              default:
-                break;
-            }
-            playerSelection = null; // Reset player select
-            PApplet.println("Reset playerSelection");
+          if (Game.sketch.mousePressed && mouseInputDelay == 0f) {
+            System.out.println("Set target");
+            crane.setTarget(closestSocket, closestProduct);
+            mouseInputDelay = Factory.MOUSE_DELAY;
           }
         }
       }
@@ -214,8 +197,8 @@ public abstract class PlayGameState implements IState {
         componentOptions[i].render(playerSelection.type, position); // Draw highlight box if component and selection type matches
       }
       if (componentOptions[i].mouseTouching(position) && Game.sketch.mousePressed && mouseInputDelay == 0f) {
-        playerSelection = new PlayerSelection(componentOptions[i].type, componentFactory);
-        crane.setTarget(Game.sketch.getMousePosition());
+        crane.addComponent(componentFactory.createComponent(componentOptions[i].type), componentOptions[i].type);
+        crane.setTarget(position);
         mouseInputDelay = Factory.MOUSE_DELAY;
       }
     }

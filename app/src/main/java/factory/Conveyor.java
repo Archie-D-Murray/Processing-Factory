@@ -14,9 +14,10 @@ import processing.core.PVector;
  */
 public class Conveyor {
     final private int colour = 0xFF444444;
-    final private float BELT_SEGMENTS = 0.025f;
+    final private float SEGMENT_LENGTH = 24f;
     private float size = 20f;
     private PVector[] positions;
+    private PImage conveyorMouth;
     private ArrayList<ConveyorSegment> conveyorSegments;
     private ArrayList<ConveyorSegment> sendToFront;
     public ArrayList<Product> conveyorItems;
@@ -31,10 +32,12 @@ public class Conveyor {
     conveyorSegments = new ArrayList<ConveyorSegment>();
     sendToFront = new ArrayList<ConveyorSegment>(1);
     PImage beltSegment = Game.sketch.imageDataBase.get("BeltSegment.png");
-    float beltWidth = beltLength() / (beltLength() * BELT_SEGMENTS);
-    beltSegment.resize((int) beltWidth, (int) (beltSegment.height * (beltWidth / beltSegment.width)));
+    conveyorMouth = Game.sketch.imageDataBase.get("ConveyorMouth.png");
+    
+    float resize = SEGMENT_LENGTH / (float) beltSegment.width;
+    beltSegment.resize(Factory.round(beltSegment.width * resize), Factory.round(beltSegment.height * resize));
     System.out.println("Belt: " + String.join(", ", Arrays.stream(positions).map(pos -> pos.toString()).collect(Collectors.toList())));
-    for (float i = beltLength(); i >= (float) beltSegment.width; i -= (float) beltSegment.width) {
+    for (float i = beltLength(); i >= 0f; i -= SEGMENT_LENGTH) {
         conveyorSegments.add(new ConveyorSegment(beltSegment, positionFromProgress(i), rotationFromProgress(i), indexFromProgress(i)));
     }
   }
@@ -63,6 +66,10 @@ public class Conveyor {
             product.render();
         }
         conveyorItems.removeAll(productsAwaitingReceiver); // Remove products that are being processed
+        float startAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[1], positions[0]).normalize());
+        float endAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[positions.length - 1], positions[positions.length - 2]).normalize());
+        Game.sketch.image(conveyorMouth, positions[0], startAngle);
+        Game.sketch.image(conveyorMouth, positions[positions.length - 1], endAngle);
     }
 
     /**
