@@ -185,6 +185,30 @@ public class Factory extends PApplet {
         return current + Math.signum(target - current) * maxDelta;
     }
 
+    public static float cLerp(float min, float max, float delta) {
+        return min * (1 - delta) + max * delta;
+    }
+
+    public static float smoothStep(float min, float max, float delta) {
+        delta = clamp(0f, 1f, delta);
+        if (delta == Float.NaN) {
+          delta = 0f;
+        }
+        return cLerp(min, max, 0.5f + 0.5f * (sin(PI * delta - 0.5f * PI)));
+    }
+  
+    public static float easeStep(float min, float max, float delta) {
+        delta = clamp(0f, 1f, delta);
+        if (delta == Float.NaN) {
+          delta = 0f;
+        }
+       return cLerp(min, max, 0.5f + 0.5f * (sin(PI * 2.0f * delta - 0.5f * PI))); 
+    }
+
+    public static float easeOutBack(float value) {
+        return 1 + (1.70158f + 1) * pow(value - 1, 3) + 1.70158f * pow(value - 1, 2);
+    }
+
     public static float randRange(float min, float max) {
         float range = (max - min) + 1;
         return ((float) Math.random() * range) + min;
@@ -207,6 +231,10 @@ public class Factory extends PApplet {
             addition.mult(maxDelta);
             return PVector.add(current, addition);
         }
+    }
+
+    public static PVector smoothTowards(PVector min, PVector max, float value) {
+        return new PVector(smoothStep(min.x, max.x, value), smoothStep(min.y, max.y, value));
     }
 
     public PVector circleVector(float radians) {

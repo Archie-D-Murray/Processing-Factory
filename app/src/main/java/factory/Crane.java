@@ -6,22 +6,30 @@ import processing.core.PImage;
 import processing.core.PVector;
 
 public class Crane {
-    final float SPEED = 500;
+    final float MAX_SPEED = 500;
+    final float MIN_SPEED = 200;
     final int WIDTH = 32;
     private PImage vertical;
     private PImage horizontal;
     private PImage center;
     private PImage binding;
+    private PVector startPos;
     private PVector currentPos;
     private PVector targetPos;
     private Component component;
     private ComponentType componentType;
     private ComponentSocket socket;
     private Product target;
-	private boolean showComponent;
+	  private boolean showComponent;
     private ComponentSelect[] componentSelects;
 
     public Crane(ComponentSelect[] componentSelects) {
+        Game.sketch.printfln(
+            "0f: %f, 0.5f: %f, 1f: %f", 
+            Factory.easeStep(MIN_SPEED, MAX_SPEED, 0), 
+            Factory.easeStep(MIN_SPEED, MAX_SPEED, 0.5f), 
+            Factory.easeStep(MIN_SPEED, MAX_SPEED, 1)
+        );      
         this.horizontal = Game.sketch.imageDataBase.get("CraneHorizontal.png").copy();
         this.vertical = Game.sketch.imageDataBase.get("CraneVertical.png").copy();
         this.center = Game.sketch.imageDataBase.get("CraneCenter.png").copy();
@@ -35,6 +43,7 @@ public class Crane {
         showComponent = false;
         target = null;
         socket = null;
+        startPos = new PVector(Game.sketch.width / 2, Game.sketch.height / 2);
         targetPos = new PVector();
     }
 
@@ -46,11 +55,13 @@ public class Crane {
 
     public void setTarget(PVector position) {
         targetPos = position;
+        startPos = currentPos;
     }
 
     public void setTarget(ComponentSocket socket, Product product) {
         target = product;
         this.socket = socket;
+        startPos = currentPos;
     }
 
     public void update() {
@@ -61,8 +72,13 @@ public class Crane {
                 showComponent = true;
             } 
         }
+        if (target != null && showComponent) {
+          targetPos = PVector.add(target.position, socket.offset);
+        }
+        float moveDelta = Factory.easeStep(MIN_SPEED, MAX_SPEED, PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPos)) * Game.sketch.deltaTime;
+        currentPos = Factory.moveTowards(currentPos, targetPos, moveDelta);
+        Game.sketch.text(moveDelta, currentPos.x + (float) vertical.width + Game.sketch.textWidth(Float.toString(moveDelta)) * 0.5f, currentPos.y + center.height);
         if (target != null && component != null && showComponent) {
-            currentPos = Factory.moveTowards(currentPos, PVector.add(socket.offset, target.position), SPEED * Game.sketch.deltaTime);
             if (target.getBoundingBox().isOverlapping(boundingBox)) {
                 socket.component = component;
                 // Spark effect when adding component
@@ -84,10 +100,9 @@ public class Crane {
                 socket = null;
                 showComponent = false;
             }
-        } else {
-            currentPos = Factory.moveTowards(currentPos, targetPos, SPEED * Game.sketch.deltaTime);
         }
         render(currentPos);
+
     }
 
     public BoundingBox getBoundingBox() {
