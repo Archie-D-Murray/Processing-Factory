@@ -9,6 +9,8 @@ public class Crane {
     final float MAX_SPEED = 500;
     final float MIN_SPEED = 200;
     final int WIDTH = 32;
+
+    private int moneyUsed = 0;
     private PImage vertical;
     private PImage horizontal;
     private PImage center;
@@ -20,7 +22,7 @@ public class Crane {
     private ComponentType componentType;
     private ComponentSocket socket;
     private Product target;
-	  private boolean showComponent;
+    private boolean showComponent;
     private ComponentSelect[] componentSelects;
 
     public Crane(ComponentSelect[] componentSelects) {
@@ -70,6 +72,7 @@ public class Crane {
             if (getSelectionBoundingBox().isOverlapping(boundingBox)) {
                 System.out.println("Enabling component rendering");
                 showComponent = true;
+                moneyUsed = component.value;
             } 
         }
         if (target != null && showComponent) {
@@ -77,7 +80,6 @@ public class Crane {
         }
         float moveDelta = Factory.easeStep(MIN_SPEED, MAX_SPEED, PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPos)) * Game.sketch.deltaTime;
         currentPos = Factory.moveTowards(currentPos, targetPos, moveDelta);
-        Game.sketch.text(moveDelta, currentPos.x + (float) vertical.width + Game.sketch.textWidth(Float.toString(moveDelta)) * 0.5f, currentPos.y + center.height);
         if (target != null && component != null && showComponent) {
             if (target.getBoundingBox().isOverlapping(boundingBox)) {
                 socket.component = component;
@@ -135,4 +137,13 @@ public class Crane {
             .get()
             .getBoundingBox(targetPos);
     }
+
+    public int getMoneyUsed() {
+        return moneyUsed;
+    }
+
+	public void resetMoneyUsed() {
+        System.out.println("Reset money used!");
+        moneyUsed = 0;
+	}
 }

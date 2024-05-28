@@ -51,7 +51,7 @@ class MenuGameState implements IState {
    */
   @Override public void checkTransition() {
     if (playButton.isClicked) {
-      Game.sketch.switchState((IState) new Level1(0));
+      Game.sketch.switchState((IState) new Level1());
       return;
     }
     

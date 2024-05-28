@@ -9,15 +9,11 @@ public class ProductReceiver {
   public final int MARGIN = 500;
   public final int MAX_REWARD = 200;
   public final int MAX_PENALTY = -50;
+  public float receiverModifier = 1f;
   public int targetValue;
   
   public int getMoneyFromSubmission(Product submission) {
-    int submissionValue = submission.getValue();
     submission.hasBeenProcessed = true;
-    return PApplet.round(reward(submissionValue, targetValue));
-  }
-  
-  private float reward(float submission, float target) {
-    return Factory.remap(MAX_PENALTY, MAX_REWARD, MARGIN, 0f, Math.abs(target - submission));
+    return PApplet.round((float) submission.getValue() * receiverModifier);
   }
 }

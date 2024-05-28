@@ -1,0 +1,4 @@
+- [ ] Each level have starting money, buy components instead
+- [ ] Earn from selling components
+- [ ] Buy new components each level with money earned 
+- [ ] Add more product bases

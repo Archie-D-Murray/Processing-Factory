@@ -1,8 +1,5 @@
 package factory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -12,14 +9,14 @@ import processing.core.PVector;
  */
 public class Level1 extends PlayGameState {
   
-  public Level1(int score) {
-    super(score);
+  public Level1() {
+    super(500, 500f);
     this.lives = 3;
   }
   
   @Override public void checkTransition() {
-    if (lives <= 0 || targetValues.size() == 0) {
-      Game.sketch.switchState(new Level2(score, lives));
+    if (lives <= 0 || isTimeUp()) {
+      Game.sketch.switchState(new Level2());
     }
   }
   
@@ -67,22 +64,6 @@ public class Level1 extends PlayGameState {
       new PVector(Game.sketch.width * 0.25f, Game.sketch.height * 0.5f),
       new PVector(Game.sketch.width, Game.sketch.height * 0.5f),
     };
-  }
-  
-  @Override protected void populateAsteroids() {
-    asteroids = new ArrayList<Asteroid>(Arrays.asList(new Asteroid(new PVector(Game.sketch.width * 0.75f, Game.sketch.height * 0.75f), PApplet.PI)));
-  }
-  
-  @Override protected void populateTargetValues() {
-    int count = Factory.random.nextInt(3, 5);
-    targetValues = new ArrayList<Integer>();
-    for (int i = 0; i < count; i++) {
-      if (Game.sketch.random(1f) > 0.6f) {
-        targetValues.add(genRandomValue(ProductType.NORMAL));
-      } else {
-        targetValues.add(genRandomValue(ProductType.LIGHT));
-      }
-    }
   }
   
   @Override protected void initSelectOptions() {
