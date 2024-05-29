@@ -18,8 +18,33 @@
                 "source": false
               }
             }
+          },
+          {
+            "id": "769bb746bc496aa7",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Gameplay Loop.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          },
+          {
+            "id": "11dd21b88f2ce079",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Ideas.md",
+                "mode": "source",
+                "source": false
+              }
+            }
           }
-        ]
+        ],
+        "currentTab": 2
       }
     ],
     "direction": "vertical"
@@ -149,6 +174,10 @@
       "obsidian-excalidraw-plugin:Create new drawing": false
     }
   },
-  "active": "4300db2f9c27db53",
-  "lastOpenFiles": []
+  "active": "11dd21b88f2ce079",
+  "lastOpenFiles": [
+    "Untitled.md",
+    "Gameplay Loop.md",
+    "Ideas.md"
+  ]
 }

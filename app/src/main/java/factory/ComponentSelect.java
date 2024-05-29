@@ -11,19 +11,19 @@ public class ComponentSelect extends Select {
   public ComponentSelect(ComponentType type) {
     switch (type) {
     case FAN:
-      icon = Game.sketch.imageDataBase.get("FanComponent.png").copy();
+      icon = ImageDataBase.get("FanComponent.png").copy();
       value = 100;
       break;
     case GUN:
-      icon = Game.sketch.imageDataBase.get("GunComponent.png").copy();
+      icon = ImageDataBase.get("GunComponent.png").copy();
       value = 250;
       break;
     case SHIELD:
-      icon = Game.sketch.imageDataBase.get("ShieldComponent.png").copy();
+      icon = ImageDataBase.get("ShieldComponent.png").copy();
       value = 300;
       break;
     default:
-      icon = Game.sketch.imageDataBase.get("Default.png").copy();
+      icon = ImageDataBase.get("Default.png").copy();
     }
     this.type = type;
   }
@@ -35,7 +35,7 @@ public class ComponentSelect extends Select {
 
   public void highlightSelectedType(PVector position, ComponentType type) {
     if (this.type == type) {
-      Game.sketch.image(Game.sketch.imageDataBase.get("Select.png"), position);
+      Game.sketch.image(ImageDataBase.get("Select.png"), position);
     }
   }
 

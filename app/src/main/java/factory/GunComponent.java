@@ -11,7 +11,7 @@ public class GunComponent extends Component {
   private float rotationSpeed;
   
   public GunComponent(float rotation, float rotationSpeed, PVector[] gunTargets) {
-    super(Game.sketch.imageDataBase.get("GunComponent.png"), rotation);
+    super(ImageDataBase.get("GunComponent.png"), rotation);
     this.rotationSpeed = rotationSpeed;
     this.gunTargets = gunTargets;
     this.value = 250;
@@ -22,7 +22,7 @@ public class GunComponent extends Component {
     PVector lookAt = PVector.sub(getNearestGunTarget(position), position);
     rotation = Factory.approach(rotation, PApplet.PI - PVector.angleBetween(lookAt, new PVector(0f, -1f)), rotationSpeed / 60f);
     super.draw(position);
-    Game.sketch.image(Game.sketch.imageDataBase.get("Crosshair.png"), nearest);
+    Game.sketch.image(ImageDataBase.get("Crosshair.png"), nearest);
   }
   
   private PVector getNearestGunTarget(PVector position) {

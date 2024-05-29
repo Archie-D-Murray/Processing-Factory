@@ -9,7 +9,7 @@ import processing.core.PVector;
  */
 class LightBase extends Product {
   public LightBase(float rotation, PVector position, ArrayList<ComponentSocket> sockets) {
-    super(Game.sketch.imageDataBase.get("LightProduct.png"), position, rotation);
+    super(ImageDataBase.get("LightProduct.png"), position, rotation);
     baseValue = 100;
     components = sockets;
   }
@@ -21,7 +21,7 @@ class LightBase extends Product {
 
 class NormalBase extends Product {
   public NormalBase(float rotation, PVector position, ArrayList<ComponentSocket> sockets) {
-    super(Game.sketch.imageDataBase.get("NormalProduct.png"), position, rotation);
+    super(ImageDataBase.get("NormalProduct.png"), position, rotation);
     baseValue = 500;
     components = sockets;
   }
@@ -29,7 +29,7 @@ class NormalBase extends Product {
 
 class HeavyBase extends Product {
   public HeavyBase(float rotation, PVector position, ArrayList<ComponentSocket> sockets) {
-    super(Game.sketch.imageDataBase.get("HeavyProduct.png"), position, rotation);
+    super(ImageDataBase.get("HeavyProduct.png"), position, rotation);
     baseValue = 1000;
     components = sockets;
   }

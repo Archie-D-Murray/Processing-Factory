@@ -7,7 +7,7 @@ import processing.core.PVector;
 
 public class Crane {
     final float MAX_SPEED = 500;
-    final float MIN_SPEED = 200;
+    final float MIN_SPEED = 50;
     final int WIDTH = 32;
 
     private int moneyUsed = 0;
@@ -24,18 +24,19 @@ public class Crane {
     private Product target;
     private boolean showComponent;
     private ComponentSelect[] componentSelects;
+    private Conveyor conveyor;
 
-    public Crane(ComponentSelect[] componentSelects) {
-        Game.sketch.printfln(
+    public Crane(ComponentSelect[] componentSelects, Conveyor conveyor) {
+        Factory.printfln(
             "0f: %f, 0.5f: %f, 1f: %f", 
             Factory.easeStep(MIN_SPEED, MAX_SPEED, 0), 
             Factory.easeStep(MIN_SPEED, MAX_SPEED, 0.5f), 
             Factory.easeStep(MIN_SPEED, MAX_SPEED, 1)
         );      
-        this.horizontal = Game.sketch.imageDataBase.get("CraneHorizontal.png").copy();
-        this.vertical = Game.sketch.imageDataBase.get("CraneVertical.png").copy();
-        this.center = Game.sketch.imageDataBase.get("CraneCenter.png").copy();
-        this.binding = Game.sketch.imageDataBase.get("CraneBinding.png").copy();
+        this.horizontal = ImageDataBase.get("CraneHorizontal.png").copy();
+        this.vertical = ImageDataBase.get("CraneVertical.png").copy();
+        this.center = ImageDataBase.get("CraneCenter.png").copy();
+        this.binding = ImageDataBase.get("CraneBinding.png").copy();
         this.componentSelects = componentSelects;
         this.horizontal.resize(Game.sketch.width, WIDTH);
         this.vertical.resize(WIDTH, Game.sketch.height);
@@ -47,6 +48,7 @@ public class Crane {
         socket = null;
         startPos = new PVector(Game.sketch.width / 2, Game.sketch.height / 2);
         targetPos = new PVector();
+        this.conveyor = conveyor;
     }
 
     public void addComponent(Component component, ComponentType componentType) {
@@ -73,25 +75,27 @@ public class Crane {
                 System.out.println("Enabling component rendering");
                 showComponent = true;
                 moneyUsed = component.value;
+                conveyor.stop();
             } 
         }
         if (target != null && showComponent) {
           targetPos = PVector.add(target.position, socket.offset);
         }
-        float moveDelta = Factory.easeStep(MIN_SPEED, MAX_SPEED, PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPos)) * Game.sketch.deltaTime;
+        float moveDelta = Factory.ease(MIN_SPEED, MAX_SPEED, PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPos)) * Game.deltaTime;
         currentPos = Factory.moveTowards(currentPos, targetPos, moveDelta);
         if (target != null && component != null && showComponent) {
-            if (target.getBoundingBox().isOverlapping(boundingBox)) {
+            Game.sketch.text(PVector.dist(targetPos, currentPos), currentPos.x + 100, currentPos.y + 40);
+            if (PVector.dist(targetPos, currentPos) <= 10f) {
                 socket.component = component;
                 // Spark effect when adding component
-                Game.sketch.animationPool.play(AnimationType.COMPONENT_ADD, target, socket);
+                AnimationPool.play(AnimationType.COMPONENT_ADD, target, socket);
                 switch (componentType) {
                     case GUN: // Attach animations to gun component
-                        Game.sketch.animationPool.play(AnimationType.GUN_FLAME, target, socket);
+                        AnimationPool.play(AnimationType.GUN_FLAME, target, socket);
                         break;
                     
                     case SHIELD: // Attach animations to shield component
-                        Game.sketch.animationPool.play(AnimationType.SHIELD_PARTICLES, target, socket);
+                        AnimationPool.play(AnimationType.SHIELD_PARTICLES, target, socket);
                         break;
 
                     default:
@@ -101,6 +105,7 @@ public class Crane {
                 target = null;
                 socket = null;
                 showComponent = false;
+                conveyor.start();
             }
         }
         render(currentPos);

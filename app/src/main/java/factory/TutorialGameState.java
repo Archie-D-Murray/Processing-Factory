@@ -12,7 +12,7 @@ public class TutorialGameState implements IState {
   private PImage background;
   
   @Override public void onEnter() {
-    background = Game.sketch.imageDataBase.get("Tutorial.png");
+    background = ImageDataBase.get("Tutorial.png");
     background.resize(Game.sketch.width, Game.sketch.height);
     backButton = new Button(
         "Back", 
@@ -30,7 +30,7 @@ public class TutorialGameState implements IState {
   
   @Override public void checkTransition() {
     if (backButton.isClicked) {
-      Game.sketch.switchState((IState) new MenuGameState());
+      Game.switchState((IState) new MenuGameState());
     }
   }
   

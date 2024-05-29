@@ -11,7 +11,7 @@ public enum ProductType {
   public static ProductType[] types = ProductType.values();
   
   public static ProductType getRandom() {
-    return types[Factory.random.nextInt(types.length)];
+    return types[Game.random.nextInt(types.length)];
   }
   
   public static ProductType fromInt(int i) {

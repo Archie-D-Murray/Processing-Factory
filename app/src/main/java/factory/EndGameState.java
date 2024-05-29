@@ -36,9 +36,9 @@ public class EndGameState implements IState {
       saveHighScore();
     }
     quit = new Button("Quit", new PVector(Game.sketch.width * 0.5f, Game.sketch.height * 0.75f), new PVector(200, 100), new int[] { 0xFFFF8888, 0xFFDDDDDD } );
-    Game.sketch.imageDataBase.get("WinSplash.png").resize(Game.sketch.width, Game.sketch.height);
-    Game.sketch.imageDataBase.get("LowerScoreSplash.png").resize(Game.sketch.width, Game.sketch.height);
-    Game.sketch.imageDataBase.get("LoseSplash.png").resize(Game.sketch.width, Game.sketch.height);
+    ImageDataBase.get("WinSplash.png").resize(Game.sketch.width, Game.sketch.height);
+    ImageDataBase.get("LowerScoreSplash.png").resize(Game.sketch.width, Game.sketch.height);
+    ImageDataBase.get("LoseSplash.png").resize(Game.sketch.width, Game.sketch.height);
   }
 
   /**
@@ -85,7 +85,7 @@ public class EndGameState implements IState {
   
   private void drawWinScreen() {
     Game.sketch.background(0xFF000000);
-    Game.sketch.image(Game.sketch.imageDataBase.get("WinSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
+    Game.sketch.image(ImageDataBase.get("WinSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
     Game.sketch.textSize(18f);
     Game.sketch.fill(0xFFFFFFFF);
     String scoreText = String.format("You Win!\nScore: %d", score);
@@ -94,7 +94,7 @@ public class EndGameState implements IState {
   
   private void drawLoseScreen() {
     Game.sketch.background(0xFF000000);
-    Game.sketch.image(Game.sketch.imageDataBase.get("LoseSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
+    Game.sketch.image(ImageDataBase.get("LoseSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
     Game.sketch.textSize(18f);
     Game.sketch.fill(0xFFFFFFFF);
     String scoreText = String.format("You Lose!\nScore: %d", score);
@@ -103,7 +103,7 @@ public class EndGameState implements IState {
   
   private void drawLowerScoreScreen() {
     Game.sketch.background(0xFF000000);
-    Game.sketch.image(Game.sketch.imageDataBase.get("LowerScoreSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
+    Game.sketch.image(ImageDataBase.get("LowerScoreSplash.png"), Game.sketch.width * 0.5f, Game.sketch.height * 0.5f);
     Game.sketch.textSize(18f);
     Game.sketch.fill(0xFFFFFFFF);
     String scoreText = String.format("Your score: %d\nScore to beat: %d", score, previousHighScore);

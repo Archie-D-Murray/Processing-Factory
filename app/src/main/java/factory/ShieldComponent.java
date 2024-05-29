@@ -15,9 +15,9 @@ public class ShieldComponent extends Component {
   private float currentShieldRotation;
 
   public ShieldComponent(float rotation, int shieldColour, int shieldSize) {
-    super(Game.sketch.imageDataBase.get("ShieldComponent.png"), rotation);
+    super(ImageDataBase.get("ShieldComponent.png"), rotation);
     this.shieldColour = shieldColour;
-    this.shieldSprite = Game.sketch.imageDataBase.get("Shield.png").copy();
+    this.shieldSprite = ImageDataBase.get("Shield.png").copy();
     this.shieldSprite.resize(shieldSize, shieldSize);
     this.value = 300;
     this.currentColourLerp = 0f;

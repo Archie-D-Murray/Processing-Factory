@@ -12,22 +12,22 @@ public class ProductSelect extends Select {
     this.type = type;
     switch (type) {
     case LIGHT:
-      icon = Game.sketch.imageDataBase.get("LightProduct.png").copy();
+      icon = ImageDataBase.get("LightProduct.png").copy();
       value = 100;
       break;
 
     case NORMAL:
-      icon = Game.sketch.imageDataBase.get("NormalProduct.png").copy();
+      icon = ImageDataBase.get("NormalProduct.png").copy();
       value = 500;
       break;
 
     case HEAVY:
-      icon = Game.sketch.imageDataBase.get("HeavyProduct.png").copy();
+      icon = ImageDataBase.get("HeavyProduct.png").copy();
       value = 1000;
       break;
 
     default:
-      icon = Game.sketch.imageDataBase.get("Default.png").copy();
+      icon = ImageDataBase.get("Default.png").copy();
       break;
     }
   }

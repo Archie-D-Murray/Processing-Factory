@@ -22,7 +22,6 @@ public abstract class PlayGameState implements IState {
     protected ComponentSocket closestSocket;
     protected ComponentSelect[] componentOptions;
     protected ProductSelect[] productOptions;
-    protected ArrayList<Asteroid> asteroids;
     protected float mouseInputDelay = 0f;
 
     public PlayGameState(int money, float levelTime) {
@@ -43,7 +42,7 @@ public abstract class PlayGameState implements IState {
         initSelectOptions();
         initProductOptions();
         conveyor = new Conveyor(conveyorPositions, 2f);
-        crane = new Crane(componentOptions);
+        crane = new Crane(componentOptions, conveyor);
         closestSocket = null;
     }
 
@@ -52,12 +51,12 @@ public abstract class PlayGameState implements IState {
      */
     @Override
     public void update() {
-        levelTime = PApplet.max(0f, levelTime - Game.sketch.deltaTime);
-        mouseInputDelay = PApplet.max(0f, mouseInputDelay - Game.sketch.deltaTime);
+        levelTime = PApplet.max(0f, levelTime - Game.deltaTime);
+        mouseInputDelay = PApplet.max(0f, mouseInputDelay - Game.deltaTime);
         updateConveyor();
         highlightComponentSockets();
         drawUI();
-        Game.sketch.animationPool.update();
+        AnimationPool.update();
         crane.update();
         if (crane.getMoneyUsed() != 0) {
             money -= crane.getMoneyUsed();

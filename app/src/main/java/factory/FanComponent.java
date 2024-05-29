@@ -11,7 +11,7 @@ public class FanComponent extends Component {
   private float rotationSpeed;
   
   public FanComponent(float rotation, float rotationSpeed) {
-    super(Game.sketch.imageDataBase.get("FanComponent.png"), rotation);
+    super(ImageDataBase.get("FanComponent.png"), rotation);
     this.rotationSpeed = rotationSpeed;
     this.value = 100;
   }

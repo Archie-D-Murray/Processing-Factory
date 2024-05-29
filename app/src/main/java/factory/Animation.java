@@ -69,7 +69,7 @@ public class Animation {
       return;
     }
     if (isAnimating) {
-      timeSinceLastChange += Game.sketch.deltaTime;
+      timeSinceLastChange += Game.deltaTime;
       
       // Hide if reached end of animation
       if (timeSinceLastChange >= frameTime && frameIndex == frames.length - 1 && hideOnFinish) {

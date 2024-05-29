@@ -1,10 +1,5 @@
 package factory;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -15,13 +10,6 @@ public class Factory extends PApplet {
     public static final float COMPONENT_SPACING = 150f;
     public static final float MOUSE_DELAY = 0.5f;
     final int WIDTH = 1920, HEIGHT = 1080;
-    public static Random random = new Random();
-    // Shared variables
-    public HashMap<String, PImage> imageDataBase;
-    public HashMap<AnimationType, PImage[]> animations;
-    public AnimationPool animationPool;
-    public IState state;
-    public float deltaTime = 0f;
 
     private float lastFrameTime = 0f;
     private float currentFrameTime = 0f;
@@ -47,6 +35,7 @@ public class Factory extends PApplet {
         imageMode(CENTER);
         rectMode(CENTER);
         ellipseMode(CENTER);
+        textAlign(CENTER, CENTER);
         Game.sketch = this;
         // Initialise various Processing modes and variables
         PFont font = createFont("Fonts/AgencyFB-Bold.ttf", 18f);
@@ -54,17 +43,15 @@ public class Factory extends PApplet {
             textFont(font);
         }
 
-        // Load all assets
-        populateImages();
-        populateAnimations();
-        animationPool = new AnimationPool();
+        ImageDataBase.populate(this);
+        AnimationPool.populate(this);
 
         // Instantiate states
-        state = (IState) new MenuGameState();
+        Game.state = (IState) new MenuGameState();
         // state = (IState) new TestGameState();
 
         // Enter state
-        state.onEnter();
+        Game.state.onEnter();
     }
 
     /*
@@ -73,100 +60,21 @@ public class Factory extends PApplet {
     public void draw() {
         updateDeltaTime();
         background(0xFF000000);
-        state.update();
-        state.checkTransition();
+        Game.state.update();
+        Game.state.checkTransition();
     }
 
     public void keyPressed() {
-        state.keyDown(Character.toLowerCase(key));
-    }
-
-    public void switchState(IState newState) {
-        state.onExit();
-        state = newState;
-        state.onEnter();
+        Game.state.keyDown(Character.toLowerCase(key));
     }
 
     private void updateDeltaTime() {
         currentFrameTime = millis() * 0.001f;
-        deltaTime = currentFrameTime - lastFrameTime;
+        Game.deltaTime = currentFrameTime - lastFrameTime;
         lastFrameTime = currentFrameTime;
     }
 
-    /**
-     * Loads all .png files in the ./Sprites/ directory
-     * and populates the imageDataBase hashmap with the
-     * local image path ("Example.png") as the key
-     */
-    private void populateImages() {
-        imageDataBase = new HashMap<String, PImage>();
-        File spritesDir = new File(sketchPath() + File.separator + "Sprites" + File.separator);
-        // If sprites directory is not present, bail
-        if (!spritesDir.exists()) {
-            println("Could not load sprites!");
-            exit();
-            return;
-        }
-        for (String imagePath : spritesDir.list()) {
-            if (!imagePath.endsWith(".png")) {
-                continue; // Skip non .png files
-            }
-
-            println("Loading image: " + imagePath);
-            // Remove absolute path
-            imagePath.replace(sketchPath(), "");
-            PImage image = loadImage("Sprites" + File.separator + imagePath);
-            imageDataBase.put(imagePath, image);
-        }
-    }
-
-    /**
-     * Iterates through all values in imageDataBase and finds all image names that
-     * contain
-     * the animation frame substring generated from all AnimationType values, each
-     * frame of an
-     * animation is put in a hashmap with the AnimationType as a key and a PImage
-     * array containing
-     * induvidual animation frames
-     */
-    private void populateAnimations() {
-        // Allocate hashmap
-        animations = new HashMap<AnimationType, PImage[]>();
-        AnimationType[] types = AnimationType.values();
-        String[] animationNames = new String[types.length];
-        for (int i = 0; i < types.length; i++) {
-            animationNames[i] = animationTypeToFileName(types[i]); // Parse enum values to file name
-        }
-
-        for (int i = 0; i < animationNames.length; i++) {
-            ArrayList<PImage> animationFrames = new ArrayList<PImage>();
-            for (String imageName : imageDataBase.keySet()) { // Find PImages that are part of animation
-                if (imageName.contains(animationNames[i])) {
-                    animationFrames.add(imageDataBase.get(imageName)); // Add image to list of PImages
-                }
-            }
-            PImage[] frames = new PImage[animationFrames.size()];
-            frames = animationFrames.toArray(frames); // ArrayList.toArray returns Object[] :(
-            animations.put(types[i], frames); // Add to animation hashmap
-        }
-    }
-
-    /**
-     * Converts AnimationType enum to a filename substring to
-     * allow for animation frames to be found
-     */
-    private String animationTypeToFileName(AnimationType type) {
-        String[] words = type.toString().split("_"); // File names are in format: FooBar.png, enum is FOO_BAR
-        ArrayList<String> convertedWords = new ArrayList<String>();
-        for (String word : words) {
-            StringBuilder wordBuilder = new StringBuilder(word.toLowerCase());
-            wordBuilder.setCharAt(0, Character.toUpperCase(wordBuilder.charAt(0))); // Title case
-            convertedWords.add(wordBuilder.toString());
-        }
-        return String.join("", convertedWords); // Concatenate all array values
-    }
-
-    public void printfln(String format, Object... args) {
+    public static void printfln(String format, Object... args) {
         println(String.format(format, args));
     }
 
@@ -192,17 +100,35 @@ public class Factory extends PApplet {
     public static float smoothStep(float min, float max, float delta) {
         delta = clamp(0f, 1f, delta);
         if (delta == Float.NaN) {
-          delta = 0f;
+            delta = 0f;
         }
         return cLerp(min, max, 0.5f + 0.5f * (sin(PI * delta - 0.5f * PI)));
     }
-  
+
     public static float easeStep(float min, float max, float delta) {
         delta = clamp(0f, 1f, delta);
         if (delta == Float.NaN) {
-          delta = 0f;
+            delta = 0f;
         }
-       return cLerp(min, max, 0.5f + 0.5f * (sin(PI * 2.0f * delta - 0.5f * PI))); 
+        return cLerp(min, max, 0.5f + 0.5f * (sin(PI * 2.0f * delta - 0.5f * PI)));
+    }
+
+    public static float ease(float min, float max, float delta) {
+        delta = clamp(0f, 1f, delta);
+        if (delta == Float.NaN) {
+            delta = 0f;
+        }
+        return cLerp(min, max, easeValue(delta));
+    }
+
+    public static float easeValue(float value) {
+        if (value <= 0.25f) {
+            return 0.5f + 0.5f * sin((4f * PI * value) - 0.5f * PI);
+        } else if (value >= 0.75f) {
+            return 0.5f + 0.5f * sin((-4f * PI * value) - 0.5f * PI);
+        } else {
+            return 1f;
+        }
     }
 
     public static float easeOutBack(float value) {
@@ -237,31 +163,31 @@ public class Factory extends PApplet {
         return new PVector(smoothStep(min.x, max.x, value), smoothStep(min.y, max.y, value));
     }
 
-    public PVector circleVector(float radians) {
+    public static PVector circleVector(float radians) {
         return new PVector(sin(radians), cos(radians));
     }
 
     public void translate(PVector position) {
-        translate(position.x, position.y);
+        Game.sketch.translate(position.x, position.y);
     }
 
     public void image(PImage image, PVector position) {
-        image(image, position.x, position.y);
+        Game.sketch.image(image, position.x, position.y);
     }
-    
+
     public void image(PImage image, PVector position, float rotation) {
-        pushMatrix();
-        translate(position.x, position.y);
-        rotate(rotation);
-        image(image, 0f, 0f);
-        popMatrix();
+        Game.sketch.pushMatrix();
+        Game.sketch.translate(position.x, position.y);
+        Game.sketch.rotate(rotation);
+        Game.sketch.image(image, 0f, 0f);
+        Game.sketch.popMatrix();
     }
 
     public static float remap(float newMin, float newMax, float oldMin, float oldMax, float value) {
         return lerp(newMin, newMax, invLerp(oldMin, oldMax, value));
     }
 
-    public void line(PVector pos1, PVector pos2) {
-        line(pos1.x, pos1.y, pos2.x, pos2.y);
+    public static void line(PVector pos1, PVector pos2) {
+        Game.sketch.line(pos1.x, pos1.y, pos2.x, pos2.y);
     }
 }

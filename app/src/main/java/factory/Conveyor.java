@@ -13,9 +13,7 @@ import processing.core.PVector;
  * Handles moving products to relevant positions and rendering them
  */
 public class Conveyor {
-    final private int colour = 0xFF444444;
     final private float SEGMENT_LENGTH = 24f;
-    private float size = 20f;
     private PVector[] positions;
     private PImage conveyorMouth;
     private ArrayList<ConveyorSegment> conveyorSegments;
@@ -23,6 +21,7 @@ public class Conveyor {
     public ArrayList<Product> conveyorItems;
     public ArrayList<Product> productsAwaitingReceiver;
     float conveyorSpeed;
+    private boolean move = true;
 
   public Conveyor(PVector[] positions, float speed) {
     this.positions = positions;
@@ -31,8 +30,8 @@ public class Conveyor {
     productsAwaitingReceiver = new ArrayList<Product>();
     conveyorSegments = new ArrayList<ConveyorSegment>();
     sendToFront = new ArrayList<ConveyorSegment>(1);
-    PImage beltSegment = Game.sketch.imageDataBase.get("BeltSegment.png");
-    conveyorMouth = Game.sketch.imageDataBase.get("ConveyorMouth.png");
+    PImage beltSegment = ImageDataBase.get("BeltSegment.png");
+    conveyorMouth = ImageDataBase.get("ConveyorMouth.png");
     
     float resize = SEGMENT_LENGTH / (float) beltSegment.width;
     beltSegment.resize(Factory.round(beltSegment.width * resize), Factory.round(beltSegment.height * resize));
@@ -56,13 +55,9 @@ public class Conveyor {
                     productsAwaitingReceiver.add(product);
                 }
             }
-
-            // Move towards takes a maximum move delta to interpolate from first position to
-            // second
-            product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed); // Move
-                                                                                                                        // to
-                                                                                                                        // new
-                                                                                                                        // pos
+            if (move) {
+                product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed);
+            }
             product.render();
         }
         conveyorItems.removeAll(productsAwaitingReceiver); // Remove products that are being processed
@@ -70,6 +65,14 @@ public class Conveyor {
         float endAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[positions.length - 1], positions[positions.length - 2]).normalize());
         Game.sketch.image(conveyorMouth, positions[0], startAngle);
         Game.sketch.image(conveyorMouth, positions[positions.length - 1], endAngle);
+    }
+
+    public void stop() {
+        move = false;
+    }
+
+    public void start() {
+        move = true;
     }
 
     /**
@@ -86,7 +89,7 @@ public class Conveyor {
     private void renderBelt() {
         sendToFront.clear();
         for (ConveyorSegment segment : conveyorSegments) {
-            segment.update(positions);
+            segment.update(positions, move);
             if (segment.sendToFront) {
                 sendToFront.add(segment);
             }

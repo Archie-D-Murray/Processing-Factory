@@ -16,7 +16,7 @@ public class Level1 extends PlayGameState {
   
   @Override public void checkTransition() {
     if (lives <= 0 || isTimeUp()) {
-      Game.sketch.switchState(new Level2());
+      Game.switchState(new Level2());
     }
   }
   

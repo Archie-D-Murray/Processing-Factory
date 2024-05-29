@@ -1,8 +1,5 @@
 package factory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -18,7 +15,7 @@ public class Level2 extends PlayGameState {
   
   @Override public void checkTransition() {
     if (lives <= 0 || isTimeUp()) {
-      Game.sketch.switchState((IState) new EndGameState(money));
+      Game.switchState((IState) new EndGameState(money));
     }
   }
   
