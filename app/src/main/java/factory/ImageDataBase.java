@@ -28,14 +28,18 @@ public class ImageDataBase {
             if (!imagePath.endsWith(".png")) {
                 continue; // Skip non .png files
             }
-
+            
             System.out.println("Loading image: " + imagePath);
             // Remove absolute path
             imagePath.replace(factory.sketchPath(), "");
             PImage image = factory.loadImage("Sprites" + File.separator + imagePath);
             imageDataBase.put(imagePath, image);
         }
-        assert defaultImage != null;
+        defaultImage = factory.loadImage("Sprites" + File.separator + "Default.png");
+        if (defaultImage == null) {
+            System.out.println("ERROR: Could not load default image!");
+            factory.exit();
+        }
     }
 
     public static PImage get(String imageName) {

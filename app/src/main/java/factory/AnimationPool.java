@@ -31,7 +31,7 @@ public class AnimationPool {
             switch (type) {
                 case COMPONENT_ADD:
                     rotation = 0f;
-                    speed = 9f;
+                    speed = 48f;
                     break;
                 case SHIELD_PARTICLES:
                     rotation = 0f;

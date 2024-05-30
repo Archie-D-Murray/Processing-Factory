@@ -18,21 +18,18 @@ public class Conveyor {
     private PImage conveyorMouth;
     private ArrayList<ConveyorSegment> conveyorSegments;
     private ArrayList<ConveyorSegment> sendToFront;
-    public ArrayList<Product> conveyorItems;
-    public ArrayList<Product> productsAwaitingReceiver;
+    private Product product;
     float conveyorSpeed;
     private boolean move = true;
+    private boolean productAtEnd = false;
 
   public Conveyor(PVector[] positions, float speed) {
     this.positions = positions;
     this.conveyorSpeed = speed;
-    this.conveyorItems = new ArrayList<Product>();
-    productsAwaitingReceiver = new ArrayList<Product>();
     conveyorSegments = new ArrayList<ConveyorSegment>();
     sendToFront = new ArrayList<ConveyorSegment>(1);
     PImage beltSegment = ImageDataBase.get("BeltSegment.png");
     conveyorMouth = ImageDataBase.get("ConveyorMouth.png");
-    
     float resize = SEGMENT_LENGTH / (float) beltSegment.width;
     beltSegment.resize(Factory.round(beltSegment.width * resize), Factory.round(beltSegment.height * resize));
     System.out.println("Belt: " + String.join(", ", Arrays.stream(positions).map(pos -> pos.toString()).collect(Collectors.toList())));
@@ -46,25 +43,30 @@ public class Conveyor {
      */
     public void moveConveyorItems() {
         renderBelt();
-        for (Product product : conveyorItems) {
-            // Is product at target position
-            if (PVector.dist(product.position, positions[product.targetPosIndex]) < PApplet.EPSILON) {
-                if (product.targetPosIndex < positions.length - 1) { // If product is not at end of conveyor
-                    product.targetPosIndex++;
-                } else {
-                    productsAwaitingReceiver.add(product);
-                }
+        // Is product at target position
+        if (PVector.dist(product.position, positions[product.targetPosIndex]) < PApplet.EPSILON) {
+            if (product.targetPosIndex < positions.length - 1) { // If product is not at end of conveyor
+                product.targetPosIndex++;
+            } else {
+                productAtEnd = true;
             }
-            if (move) {
-                product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed);
-            }
-            product.render();
         }
-        conveyorItems.removeAll(productsAwaitingReceiver); // Remove products that are being processed
+        if (move) {
+            product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed);
+        }
+        product.render();
         float startAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[1], positions[0]).normalize());
         float endAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[positions.length - 1], positions[positions.length - 2]).normalize());
         Game.sketch.image(conveyorMouth, positions[0], startAngle);
         Game.sketch.image(conveyorMouth, positions[positions.length - 1], endAngle);
+    }
+
+    public boolean isFinished() {
+        return productAtEnd;
+    }
+
+    public Product getProduct() {
+        return product;
     }
 
     public void stop() {
@@ -80,7 +82,7 @@ public class Conveyor {
      */
     public void addProduct(Product product) {
         product.position = positions[0];
-        conveyorItems.add(product);
+        this.product = product;
     }
 
     /**

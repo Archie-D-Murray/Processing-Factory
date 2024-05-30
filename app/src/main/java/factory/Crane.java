@@ -10,7 +10,6 @@ public class Crane {
     final float MIN_SPEED = 50;
     final int WIDTH = 32;
 
-    private int moneyUsed = 0;
     private PImage vertical;
     private PImage horizontal;
     private PImage center;
@@ -74,7 +73,6 @@ public class Crane {
             if (getSelectionBoundingBox().isOverlapping(boundingBox)) {
                 System.out.println("Enabling component rendering");
                 showComponent = true;
-                moneyUsed = component.value;
                 conveyor.stop();
             } 
         }
@@ -142,13 +140,4 @@ public class Crane {
             .get()
             .getBoundingBox(targetPos);
     }
-
-    public int getMoneyUsed() {
-        return moneyUsed;
-    }
-
-	public void resetMoneyUsed() {
-        System.out.println("Reset money used!");
-        moneyUsed = 0;
-	}
 }

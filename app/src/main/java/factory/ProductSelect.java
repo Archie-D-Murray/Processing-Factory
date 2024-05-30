@@ -34,6 +34,6 @@ public class ProductSelect extends Select {
 
   @Override protected void drawValue(PVector position) {
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(String.format("%d", value), position.x - Factory.COMPONENT_SPACING - Game.sketch.textWidth(String.format("%d", value)) * 0.5f, position.y + Game.sketch.textAscent() * 0.5f);
+    Game.sketch.text(String.format("%d", value), position.x, position.y + Factory.COMPONENT_SPACING);
   }
 }

@@ -1,7 +1,6 @@
 package factory;
 
-import java.util.ArrayList;
-
+import java.util.Arrays;
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -9,24 +8,21 @@ import processing.core.PVector;
  * All base game logic, inherited by Level classes which implement
  * setup functions to provide configurablity to levels
  */
-public abstract class PlayGameState implements IState {
+public class PlayGameState implements IState {
     protected Crane crane;
-    protected ComponentFactory componentFactory;
-    protected ProductFactory productFactory;
     protected ProductReceiver reciever;
     protected Conveyor conveyor;
     protected int money;
+    protected Stats target;
     protected int lives;
-    protected float levelTime;
-    protected PlayerSelection playerSelection = null;
     protected ComponentSocket closestSocket;
     protected ComponentSelect[] componentOptions;
     protected ProductSelect[] productOptions;
-    protected float mouseInputDelay = 0f;
 
-    public PlayGameState(int money, float levelTime) {
+    public PlayGameState(int money, ComponentType[] componentOptions, ProductType[] productOptions) {
         this.money = money;
-        this.levelTime = levelTime;
+        this.componentOptions = Arrays.stream(componentOptions).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
+        this.productOptions = Arrays.stream(productOptions).map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);
     }
 
     /**
@@ -35,12 +31,11 @@ public abstract class PlayGameState implements IState {
     @Override
     public void onEnter() {
         PApplet.println("Entered play state");
-        componentFactory = new ComponentFactory();
-        productFactory = new ProductFactory();
+        int level = Game.config.currentLevel;
+        int index = Game.random.nextInt(0, Game.config.levels.length);
+        target = Game.config.levels[level].possibleTargets[index];
         reciever = new ProductReceiver();
-        PVector[] conveyorPositions = getConveyorPositions();
-        initSelectOptions();
-        initProductOptions();
+        PVector[] conveyorPositions = Game.config.levels[level].conveyorPositions;
         conveyor = new Conveyor(conveyorPositions, 2f);
         crane = new Crane(componentOptions, conveyor);
         closestSocket = null;
@@ -51,16 +46,17 @@ public abstract class PlayGameState implements IState {
      */
     @Override
     public void update() {
-        levelTime = PApplet.max(0f, levelTime - Game.deltaTime);
-        mouseInputDelay = PApplet.max(0f, mouseInputDelay - Game.deltaTime);
         updateConveyor();
         highlightComponentSockets();
         drawUI();
         AnimationPool.update();
         crane.update();
-        if (crane.getMoneyUsed() != 0) {
-            money -= crane.getMoneyUsed();
-            crane.resetMoneyUsed();
+    }
+
+    @Override
+    public void checkTransition() {
+        if (conveyor.isFinished()) {
+            Game.switchState(new MenuGameState());
         }
     }
 
@@ -77,8 +73,6 @@ public abstract class PlayGameState implements IState {
         }
     }
 
-    protected abstract PVector[] getConveyorPositions();
-
     /**
      * Returns closest product to mouse on conveyor
      */
@@ -86,15 +80,10 @@ public abstract class PlayGameState implements IState {
         if (!crane.hasComponent()) {
             return null;
         }
-        float closest = 100f;
         PVector mousePos = Game.sketch.getMousePosition();
         Product closestProduct = null;
-        for (Product product : conveyor.conveyorItems) {
-            if (PVector.dist(mousePos, product.position) < closest
-                    && product.getBoundingBox().isOverlappingPoint(mousePos)) {
-                closestProduct = product;
-                closest = PVector.dist(mousePos, product.position);
-            }
+        if (conveyor.getProduct().getBoundingBox().isOverlappingPoint(mousePos)) {
+            closestProduct = conveyor.getProduct();
         }
         return closestProduct;
     }
@@ -105,14 +94,9 @@ public abstract class PlayGameState implements IState {
     protected void updateConveyor() {
         // Conveyor logic
         conveyor.moveConveyorItems();
-        ArrayList<Product> toRemove = new ArrayList<Product>();
-        for (Product product : conveyor.productsAwaitingReceiver) {
-            money += reciever.getMoneyFromSubmission(product);
-            toRemove.add(product);
-            product = null;
-            // TODO: Play money animation
+        if (conveyor.isFinished()) {
+            money += reciever.getMoneyFromSubmission(conveyor.getProduct());
         }
-        conveyor.productsAwaitingReceiver.removeAll(toRemove);
     }
 
     /**
@@ -138,10 +122,10 @@ public abstract class PlayGameState implements IState {
                     // Highlight valid component socket
                     Game.sketch.fill(0xAA00FF00);
                     Game.sketch.rect(worldSpaceSocketPos.x, worldSpaceSocketPos.y, 20f, 20f);
-                    if (Game.sketch.mousePressed && mouseInputDelay == 0f) {
+                    if (Game.mouseDown()) {
                         System.out.println("Set target");
                         crane.setTarget(closestSocket, closestProduct);
-                        mouseInputDelay = Factory.MOUSE_DELAY;
+                        Game.mouseInputDelay = Factory.MOUSE_DELAY;
                     }
                 }
             }
@@ -158,20 +142,10 @@ public abstract class PlayGameState implements IState {
         // Shows component values, keybinds and images
         for (int i = 0; i < componentOptions.length; i++) {
             PVector position = new PVector(startPos + i * Factory.COMPONENT_SPACING, Game.sketch.height * 0.9f);
-            if (playerSelection == null) {
-                componentOptions[i].render(null, position);
-            } else {
-                // Draw highlight box if component and selection type matches
-                componentOptions[i].render(playerSelection.type, position);
-            }
-            if (componentOptions[i].mouseTouching(position) && Game.sketch.mousePressed && mouseInputDelay == 0f && !crane.hasComponent()) {
-                if (money >= componentOptions[i].value) {
-                    crane.addComponent(componentFactory.createComponent(componentOptions[i].type), componentOptions[i].type);
-                    crane.setTarget(position);
-                    mouseInputDelay = Factory.MOUSE_DELAY;
-                } else {
-                    flashMoney();
-                }
+            if (componentOptions[i].mouseTouching(position) && Game.mouseDown() && !crane.hasComponent()) {
+                crane.addComponent(Component.createComponent(componentOptions[i].type), componentOptions[i].type);
+                crane.setTarget(position);
+                Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
         }
 
@@ -181,14 +155,9 @@ public abstract class PlayGameState implements IState {
         for (int i = 0; i < productOptions.length; i++) {
             PVector position = new PVector(Game.sketch.width * 0.1f, startPos + i * Factory.COMPONENT_SPACING);
             productOptions[i].render(position);
-            if (productOptions[i].isTouchingMouse(position) && Game.sketch.mousePressed && mouseInputDelay == 0f) {
-                if (money >= productOptions[i].value) {
-                    conveyor.addProduct(productFactory.createBase(productOptions[i].type));
-                    mouseInputDelay = Factory.MOUSE_DELAY;
-                    money -= productOptions[i].value;
-                } else {
-                    flashMoney();
-                }
+            if (productOptions[i].isTouchingMouse(position) && Game.mouseDown()) {
+                conveyor.addProduct(Product.createBase(productOptions[i].type));
+                Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
         }
     }
@@ -201,26 +170,17 @@ public abstract class PlayGameState implements IState {
     }
 
     /**
-     * Allows for different select options to be enabled in concrete implementations
-     */
-    protected abstract void initSelectOptions();
-
-    protected abstract void initProductOptions();
-
-    /**
      * Draws target values and highlights current target
      * Draws score and remaining lives
      */
     protected void drawUI() {
         Game.sketch.textSize(40f);
         Game.sketch.fill(0xFFFFFFFF);
-        Game.sketch.text(String.format("Remaining Time: %.2f\nMoney: %d\nLives: %d", levelTime, money, lives),
-        Game.sketch.width * 0.01f, Game.sketch.height * 0.05f);
+        // TODO: Draw target!
+        Game.sketch.textAlign(Factory.TOP, Factory.LEFT);
+        Game.sketch.text(String.format("Target: %s\nMoney: %d", target.toString(), money), Game.sketch.width * 0.01f, Game.sketch.height * 0.05f);
+        Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
         drawSelectElements();
-    }
-
-    protected boolean isTimeUp() {
-        return levelTime == 0f;
     }
 }
 

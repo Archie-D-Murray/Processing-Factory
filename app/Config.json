@@ -1,0 +1,50 @@
+{
+  "currentLevel": 0,
+  "levels": [
+    {
+      "level": 0,
+      "conveyorPositions": [
+        {
+          "x": 0.0,
+          "y": 864.0,
+          "z": 0.0
+        },
+        {
+          "x": 480.0,
+          "y": 864.0,
+          "z": 0.0
+        },
+        {
+          "x": 480.0,
+          "y": 540.0,
+          "z": 0.0
+        },
+        {
+          "x": 1920.0,
+          "y": 540.0,
+          "z": 0.0
+        }
+      ],
+      "possibleTargets": [
+        {
+          "speed": 10.0,
+          "firePower": 0.0,
+          "storage": 10.0,
+          "weight": 100.0
+        }
+      ],
+      "componentUnlocks": [
+        "GUN"
+      ],
+      "productUnlocks": [
+        "NORMAL"
+      ]
+    }
+  ],
+  "unlockedProducts": [
+    "LIGHT"
+  ],
+  "unlockedComponents": [
+    "GUN"
+  ]
+}

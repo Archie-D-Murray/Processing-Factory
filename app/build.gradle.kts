@@ -18,8 +18,8 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation(libs.guava)
     implementation(files("lib/core.jar"))
+    implementation(files("lib/gson.jar"))
 }
 
 
@@ -51,4 +51,12 @@ tasks.withType<Jar> {
     from({
         configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
+}
+
+tasks.register("printDeps") {
+    doLast {
+        configurations.compileClasspath.get().forEach { file ->
+            println(file)
+        }
+    }
 }

@@ -1,6 +1,7 @@
 package factory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import processing.core.PImage;
 import processing.core.PVector;
@@ -12,26 +13,48 @@ public abstract class Product {
   public PImage image;
   public PVector position;
   public float rotation;
-  public int baseValue = 0;
+  public Stats baseValue;
   public int targetPosIndex = 0;
   public float conveyorSpeed = 0f;
   public boolean hasBeenProcessed = false;
   ArrayList<ComponentSocket> components;
   
-  public Product(PImage image, PVector position, float rotation) {
+  protected Product(PImage image, PVector position, float rotation) {
     this.image = image.copy();
     this.position = position;
     this.rotation = rotation;
     this.components = new ArrayList<ComponentSocket>();
   }
   
+  public static Product createBase(ProductType type) {
+    switch (type) {
+      case LIGHT:
+        ArrayList<ComponentSocket> lightSockets = new ArrayList<ComponentSocket>(
+          Arrays.asList( new ComponentSocket(null, new PVector()))
+        );
+        return new LightBase(0f, new PVector(), lightSockets);
+      case NORMAL:
+        ArrayList<ComponentSocket> normalSockets = new ArrayList<ComponentSocket>(
+          Arrays.asList( new ComponentSocket(null, new PVector(50f, 0f)), new ComponentSocket(null, new PVector(-50f, 0f)))
+        );
+        return new NormalBase(0f, new PVector(), normalSockets);
+      case HEAVY:
+        ArrayList<ComponentSocket> heavySockets = new ArrayList<ComponentSocket>(
+          Arrays.asList(new ComponentSocket(null, new PVector(50f, 50f)),  new ComponentSocket(null, new PVector(-50f, -50f)),
+                        new ComponentSocket(null, new PVector(50f, -50f)), new ComponentSocket(null, new PVector(-50f, 50f)))
+        );
+        return new HeavyBase(0f, new PVector(), heavySockets);
+      default:
+        return null;
+    }
+  }
   /**
    * Renders self then all components on top
    */
   public void render() {
-    String value = String.format("%d", getValue());
+    String value = String.format("%s", getValue());
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(value, position.x - Game.sketch.textWidth(value) * 0.5f, position.y + Factory.COMPONENT_SPACING);
+    Game.sketch.text(value, position.x, position.y + Factory.COMPONENT_SPACING + 2 * Game.sketch.textAscent());
     Game.sketch.pushMatrix();
     Game.sketch.rotate(rotation);
     Game.sketch.translate(position.x, position.y);
@@ -46,13 +69,13 @@ public abstract class Product {
   /**
    * Calculates value of product and all components
    */
-  public int getValue() { // Used in reward calc
-    int value = baseValue;
+  public Stats getValue() { // Used in reward calc
+    Stats value = baseValue;
     for (ComponentSocket socket : components) {
       if (socket.component == null) {
         continue;
       }
-      value += socket.component.value;
+      value.add(socket.component.stats);
     }
     return value;
   }

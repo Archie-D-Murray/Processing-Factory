@@ -10,10 +10,11 @@ public class ProductReceiver {
   public final int MAX_REWARD = 200;
   public final int MAX_PENALTY = -50;
   public float receiverModifier = 1f;
-  public int targetValue;
+  public Stats targetValue;
+  public float reward = 100f;
   
   public int getMoneyFromSubmission(Product submission) {
     submission.hasBeenProcessed = true;
-    return PApplet.round((float) submission.getValue() * receiverModifier);
+    return PApplet.round(submission.getValue().compare(targetValue) * reward * receiverModifier);
   }
 }

@@ -41,7 +41,7 @@ public class ComponentSelect extends Select {
 
   @Override protected void drawValue(PVector position) {
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(String.format("%d", value), position.x - Game.sketch.textWidth(String.format("%d", value)) * 0.5f, position.y - Factory.COMPONENT_SPACING * 0.5f - Game.sketch.textAscent() * 2f);
+    Game.sketch.text(String.format("%d", value), position.x, position.y - Factory.COMPONENT_SPACING);
   }
   
   public boolean mouseTouching(PVector position) {

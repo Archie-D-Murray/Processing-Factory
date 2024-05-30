@@ -1,5 +1,8 @@
 package factory;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PImage;
@@ -30,13 +33,15 @@ public class Factory extends PApplet {
 
     @Override
     public void setup() {
+        Game.sketch = this;
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        Game.config = gson.fromJson(String.join("", loadStrings("Config.json")), Config.class);
         println("Sketch path: " + sketchPath());
         frameRate(FPS);
         imageMode(CENTER);
         rectMode(CENTER);
         ellipseMode(CENTER);
         textAlign(CENTER, CENTER);
-        Game.sketch = this;
         // Initialise various Processing modes and variables
         PFont font = createFont("Fonts/AgencyFB-Bold.ttf", 18f);
         if (font != null) {
@@ -59,6 +64,7 @@ public class Factory extends PApplet {
      */
     public void draw() {
         updateDeltaTime();
+        Game.mouseInputDelay = max(0f, Game.mouseInputDelay - Game.deltaTime);
         background(0xFF000000);
         Game.state.update();
         Game.state.checkTransition();

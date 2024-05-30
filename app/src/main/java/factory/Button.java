@@ -14,12 +14,14 @@ public class Button {
   public boolean isClicked = false;
   protected boolean isTouchingMouse = false;
   protected int[] backgroundColours;
+  protected BoundingBox boundingBox;
   
   public Button(String text, PVector position, PVector size, int[] backgroundColours) {
     this.text = text;
     this.size = size;
     this.position = position;
     this.backgroundColours = backgroundColours;
+    boundingBox = new BoundingBox(position, size);
   }
 
   public void update() {    
@@ -33,23 +35,17 @@ public class Button {
     Game.sketch.fill(isTouchingMouse ? backgroundColours[0] : backgroundColours[1]);
     Game.sketch.rect(position.x, position.y, size.x, size.y);
     Game.sketch.fill(0xFF000000);
-    Game.sketch.text(text, position.x - Game.sketch.textWidth(text) * 0.5f, position.y + Game.sketch.textAscent() * 0.5f);
+    Game.sketch.text(text, position.x, position.y);
   }
 
   /**
    * Updates isClicked variable each frame
    */
   private boolean checkMouseCollision(boolean showDebug) {
-   PVector mousePos = Game.sketch.getMousePosition();
     if (showDebug) {
       Game.sketch.fill(0x55FF0000);
       Game.sketch.rect(position.x, position.y, size.x, size.y);
     }
-    if (mousePos.x >= position.x - size.x * 0.5f && mousePos.x <= position.x + size.x * 0.5f) { // Within horz bounds
-      if (mousePos.y >= position.y - size.y * 0.5f && mousePos.y <= position.y + size.y * 0.5f) { //Within vert bounds
-        return true;
-      }
-    }
-    return false;
+    return boundingBox.isTouchingMouse();
   }
 }

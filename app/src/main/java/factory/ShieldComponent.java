@@ -14,12 +14,12 @@ public class ShieldComponent extends Component {
   private float lerpIncrement;
   private float currentShieldRotation;
 
-  public ShieldComponent(float rotation, int shieldColour, int shieldSize) {
+  protected ShieldComponent(float rotation, int shieldColour, int shieldSize) {
     super(ImageDataBase.get("ShieldComponent.png"), rotation);
     this.shieldColour = shieldColour;
     this.shieldSprite = ImageDataBase.get("Shield.png").copy();
     this.shieldSprite.resize(shieldSize, shieldSize);
-    this.value = 300;
+    this.stats = new Stats(0f, 0f, 0f, 20f);
     this.currentColourLerp = 0f;
     this.lerpIncrement = 1 / 60f;
     this.currentShieldRotation = 0f;
