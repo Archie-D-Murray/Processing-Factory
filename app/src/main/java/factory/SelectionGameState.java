@@ -10,7 +10,7 @@ public class SelectionGameState implements IState {
     private Stats target;
     private ComponentSelect[] componentOptions;
     private ProductSelect[] productOptions;
-    private ArrayList<ComponentSelect> selectedComponents;
+    private ArrayList<ComponentType> selectedComponents;
     private ProductType selectedBase;
     private Button build;
 
@@ -19,23 +19,28 @@ public class SelectionGameState implements IState {
         target = Game.config.getCurrentLevel().possibleTargets[Game.random.nextInt(0, Game.config.getCurrentLevel().possibleTargets.length)];
         componentOptions = Arrays.stream(Game.config.unlockedComponents).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
         productOptions = Arrays.stream(Game.config.unlockedProducts).map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);
-        selectedComponents = new ArrayList<ComponentSelect>();
+        selectedComponents = new ArrayList<ComponentType>();
         selectedBase = null;
         build = new Button("BUILD!", new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.8f), new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.2f), new int[] { 0xFF774499, 0xFFDDDDDD });
 	}
 
 	@Override
-	public void onExit() { 
-        // TODO: Create level selection class to hold this and store in Factory/Game
+	public void onExit() {
+        System.out.println("Initialised Level Selection");
+        Game.levelSelection = new LevelSelection(selectedBase, selectedComponents);
     }
 
 	@Override
 	public void update() {
         drawComponentOptions();
         drawProductOptions();
+        Game.sketch.tint(0xFFFFFFFF);
+        Game.sketch.fill(0xFFFFFFFF);
         drawTarget();
         drawSelection();
-        build.update();
+        if (selectedBase != null && !selectedComponents.isEmpty()) {
+            build.update();
+        }
 	}
 
 	private void drawComponentOptions() {
@@ -43,7 +48,7 @@ public class SelectionGameState implements IState {
 		for (int i = 0; i < componentOptions.length; i++) {
             componentOptions[i].render(position);
             if (componentOptions[i].isTouchingMouse(position) && Game.mouseDown()) {
-                selectedComponents.add(componentOptions[i]);
+                selectedComponents.add(componentOptions[i].type);
                 Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
             position.x += i * Factory.COMPONENT_SPACING;
@@ -71,7 +76,7 @@ public class SelectionGameState implements IState {
     private void drawSelection() {
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
         if (!selectedComponents.isEmpty()) {
-            String components = String.join(", ", selectedComponents.stream().map(x -> x.type.toString()).toList());
+            String components = String.join(", ", selectedComponents.stream().map(x -> x.toString()).toList());
             Game.sketch.text("Selected Components: " + components, Game.sketch.width * 0.1f, Game.sketch.height * 0.1f);
         } else {
             Game.sketch.text("Selected Components: NONE", Game.sketch.width * 0.1f, Game.sketch.height * 0.1f);
@@ -87,7 +92,7 @@ public class SelectionGameState implements IState {
 	@Override
 	public void checkTransition() {
         if (build.isClicked) {
-            Game.switchState(new MenuGameState());
+            Game.switchState(new PlayGameState());
         }
     }
 

@@ -8,7 +8,9 @@ public class Game {
     public static Random random = new Random();
     public static IState state;
     public static Config config;
+    public static LevelSelection levelSelection;
     public static float mouseInputDelay = 0f;
+	public static int money;
 
     public static void switchState(IState newState) {
         Game.state.onExit();

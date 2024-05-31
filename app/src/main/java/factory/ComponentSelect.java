@@ -12,18 +12,19 @@ public class ComponentSelect extends Select {
     switch (type) {
     case FAN:
       icon = ImageDataBase.get("FanComponent.png").copy();
-      value = 100;
+      stats = FanComponent.stats();
       break;
     case GUN:
       icon = ImageDataBase.get("GunComponent.png").copy();
-      value = 250;
+      stats = GunComponent.stats();
       break;
     case SHIELD:
       icon = ImageDataBase.get("ShieldComponent.png").copy();
-      value = 300;
+      stats = ShieldComponent.stats();
       break;
     default:
       icon = ImageDataBase.get("Default.png").copy();
+      stats = new Stats(0, 0, 0, 0);
     }
     this.type = type;
   }
@@ -41,7 +42,7 @@ public class ComponentSelect extends Select {
 
   @Override protected void drawValue(PVector position) {
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(String.format("%d", value), position.x, position.y - Factory.COMPONENT_SPACING);
+    Game.sketch.text(stats.toString(), position.x, position.y - Factory.COMPONENT_SPACING);
   }
   
   public boolean mouseTouching(PVector position) {

@@ -8,7 +8,7 @@ import processing.core.PVector;
  * containing some base shared behaviour
  */
 public abstract class Select {
-  public int value;
+  public Stats stats;
   public PImage icon;
   protected final int HOVER_TINT = 0xFF444444;
 
@@ -20,7 +20,9 @@ public abstract class Select {
     }
     Game.sketch.image(icon, position);
     Game.sketch.tint(0xFFFFFFFF);
-    drawValue(position);
+    if (isTouchingMouse(position)) {
+        drawValue(position);
+    }
   }
 
   protected abstract void drawValue(PVector position);

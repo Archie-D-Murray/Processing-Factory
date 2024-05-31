@@ -2,38 +2,42 @@ package factory;
 
 import processing.core.PVector;
 
-/**
- * Product UI component allowing player to add products to conveyor instance
- */
 public class ProductSelect extends Select {
-  public ProductType type;
 
-  public ProductSelect(ProductType type) {
-    this.type = type;
+    public ProductType type;
+
+    public ProductSelect(ProductType type) {
     switch (type) {
     case LIGHT:
       icon = ImageDataBase.get("LightProduct.png").copy();
-      value = 100;
+      stats = LightBase.stats();
       break;
-
     case NORMAL:
       icon = ImageDataBase.get("NormalProduct.png").copy();
-      value = 500;
+      stats = NormalBase.stats();
       break;
-
     case HEAVY:
       icon = ImageDataBase.get("HeavyProduct.png").copy();
-      value = 1000;
+      stats = HeavyBase.stats();
       break;
-
     default:
       icon = ImageDataBase.get("Default.png").copy();
-      break;
+      stats = new Stats(0, 0, 0, 0);
     }
+    this.type = type;
   }
 
   @Override protected void drawValue(PVector position) {
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(String.format("%d", value), position.x, position.y + Factory.COMPONENT_SPACING);
+    Game.sketch.text(stats.toString(), position.x, position.y + Factory.COMPONENT_SPACING);
   }
+  
+  public boolean mouseTouching(PVector position) {
+    return getBoundingBox(position).isTouchingMouse();
+  }
+
+  public BoundingBox getBoundingBox(PVector position) {
+      return new BoundingBox(position, new PVector(icon.width, icon.height));
+  }	
 }
+

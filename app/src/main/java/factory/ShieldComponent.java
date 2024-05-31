@@ -19,7 +19,7 @@ public class ShieldComponent extends Component {
     this.shieldColour = shieldColour;
     this.shieldSprite = ImageDataBase.get("Shield.png").copy();
     this.shieldSprite.resize(shieldSize, shieldSize);
-    this.stats = new Stats(0f, 0f, 0f, 20f);
+    this.stats = stats();
     this.currentColourLerp = 0f;
     this.lerpIncrement = 1 / 60f;
     this.currentShieldRotation = 0f;
@@ -68,4 +68,9 @@ public class ShieldComponent extends Component {
     float rotatedHeight = image.width * sinTheta + image.height * cosTheta;
     return new BoundingBox(position, new PVector(rotatedWidth, rotatedHeight));
   }
+
+  public static Stats stats() {
+      return new Stats(0f, 0f, 0f, 20f);
+  }
 }
+

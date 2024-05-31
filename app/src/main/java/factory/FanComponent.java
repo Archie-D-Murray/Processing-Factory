@@ -13,7 +13,7 @@ public class FanComponent extends Component {
   protected FanComponent(float rotation, float rotationSpeed) {
     super(ImageDataBase.get("FanComponent.png"), rotation);
     this.rotationSpeed = rotationSpeed;
-    this.stats = new Stats(5f, 0f, 0f, 10f);
+    this.stats = stats();
   }
   
   // Have fan rotate
@@ -25,5 +25,9 @@ public class FanComponent extends Component {
   @Override public BoundingBox getBoundingBox(PVector position) {
     // Circular so image.width == image.height
     return new BoundingBox(position, image.width);
+  }
+
+  public static Stats stats() {
+    return new Stats(5f, 0f, 0f, 10f);
   }
 }

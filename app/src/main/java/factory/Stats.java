@@ -15,6 +15,13 @@ public class Stats {
         this.weight = weight;
     }
 
+    public Stats(Stats other) {
+        this.speed = other.speed;
+        this.firePower = other.firePower;
+        this.storage = other.storage;
+        this.weight = other.weight;
+    }
+
     public float compare(Stats other) {
         float[] stats = new float[] {
             other.speed / speed,
@@ -43,3 +50,4 @@ public class Stats {
         );
     }
 }
+

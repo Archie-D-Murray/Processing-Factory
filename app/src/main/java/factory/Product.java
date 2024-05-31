@@ -13,7 +13,7 @@ public abstract class Product {
   public PImage image;
   public PVector position;
   public float rotation;
-  public Stats baseValue;
+  public Stats stats;
   public int targetPosIndex = 0;
   public float conveyorSpeed = 0f;
   public boolean hasBeenProcessed = false;
@@ -52,9 +52,10 @@ public abstract class Product {
    * Renders self then all components on top
    */
   public void render() {
-    String value = String.format("%s", getValue());
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(value, position.x, position.y + Factory.COMPONENT_SPACING + 2 * Game.sketch.textAscent());
+    if (getBoundingBox().isTouchingMouse()) {
+        Game.sketch.text(getValue().toString(), position.x, position.y + Factory.COMPONENT_SPACING + 2 * Game.sketch.textAscent());
+    }
     Game.sketch.pushMatrix();
     Game.sketch.rotate(rotation);
     Game.sketch.translate(position.x, position.y);
@@ -70,7 +71,7 @@ public abstract class Product {
    * Calculates value of product and all components
    */
   public Stats getValue() { // Used in reward calc
-    Stats value = baseValue;
+    Stats value = new Stats(stats);
     for (ComponentSocket socket : components) {
       if (socket.component == null) {
         continue;
@@ -127,3 +128,4 @@ public abstract class Product {
     return new BoundingBox(position, new PVector(image.width, image.height));
   }
 }
+

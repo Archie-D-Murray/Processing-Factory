@@ -32,7 +32,6 @@ public class Conveyor {
     conveyorMouth = ImageDataBase.get("ConveyorMouth.png");
     float resize = SEGMENT_LENGTH / (float) beltSegment.width;
     beltSegment.resize(Factory.round(beltSegment.width * resize), Factory.round(beltSegment.height * resize));
-    System.out.println("Belt: " + String.join(", ", Arrays.stream(positions).map(pos -> pos.toString()).collect(Collectors.toList())));
     for (float i = beltLength(); i >= 0f; i -= SEGMENT_LENGTH) {
         conveyorSegments.add(new ConveyorSegment(beltSegment, positionFromProgress(i), rotationFromProgress(i), indexFromProgress(i)));
     }
@@ -41,7 +40,7 @@ public class Conveyor {
     /**
      * Adds move vector to position of all products then renders them
      */
-    public void moveConveyorItems() {
+    public void update() {
         renderBelt();
         // Is product at target position
         if (PVector.dist(product.position, positions[product.targetPosIndex]) < PApplet.EPSILON) {
