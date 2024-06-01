@@ -16,6 +16,7 @@ public class SelectionGameState implements IState {
 
 	@Override
 	public void onEnter() {
+        Factory.println("Entered select state");
         target = Game.config.getCurrentLevel().possibleTargets[Game.random.nextInt(0, Game.config.getCurrentLevel().possibleTargets.length)];
         componentOptions = Arrays.stream(Game.config.unlockedComponents).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
         productOptions = Arrays.stream(Game.config.unlockedProducts).map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);

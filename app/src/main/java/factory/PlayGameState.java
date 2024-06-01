@@ -1,6 +1,7 @@
 package factory;
 
 import java.util.Arrays;
+
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -9,13 +10,13 @@ import processing.core.PVector;
  * setup functions to provide configurablity to levels
  */
 public class PlayGameState implements IState {
+
     protected Crane crane;
     protected ProductReceiver reciever;
     protected Conveyor conveyor;
     protected Stats target;
     protected ComponentSocket closestSocket;
     protected ComponentSelect[] componentOptions;
-
 
     /**
      * Initialises all config variables and sets up conveyor class
@@ -24,7 +25,6 @@ public class PlayGameState implements IState {
     public void onEnter() {
         PApplet.println("Entered play state");
         this.componentOptions = Arrays.stream(Game.levelSelection.selectedComponents).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
-        System.out.printf("ComponentOptions length: %d\n", componentOptions.length);
         int level = Game.config.currentLevel;
         int index = Game.random.nextInt(0, Game.config.levels.length);
         target = Game.config.levels[level].possibleTargets[index];
@@ -51,7 +51,13 @@ public class PlayGameState implements IState {
     @Override
     public void checkTransition() {
         if (conveyor.isFinished()) {
-            Game.switchState(new MenuGameState());
+            if (Game.config.currentLevel < Game.config.levels.length) {
+                Game.config.currentLevel++;
+                Game.switchState(new SelectionGameState());
+            } else {
+                Game.config.currentLevel = 0;
+                Game.switchState(new MenuGameState());
+            }
         }
     }
 

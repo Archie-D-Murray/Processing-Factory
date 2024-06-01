@@ -35,11 +35,18 @@
             "id": "11dd21b88f2ce079",
             "type": "leaf",
             "state": {
-              "type": "markdown",
+              "type": "kanban",
               "state": {
-                "file": "Ideas.md",
-                "mode": "source",
-                "source": false
+                "file": "Factory.md",
+                "kanbanViewState": {
+                  "kanban-plugin": "board",
+                  "list-collapse": [
+                    false,
+                    false,
+                    false,
+                    false
+                  ]
+                }
               }
             }
           }
@@ -110,7 +117,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Ideas.md",
+                "file": "Factory.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -127,7 +134,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Ideas.md",
+                "file": "Factory.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -150,7 +157,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Ideas.md"
+                "file": "Factory.md"
               }
             }
           }
@@ -171,13 +178,17 @@
       "command-palette:Open command palette": false,
       "markdown-importer:Open format converter": false,
       "table-editor-obsidian:Advanced Tables Toolbar": false,
-      "obsidian-excalidraw-plugin:Create new drawing": false
+      "obsidian-excalidraw-plugin:Create new drawing": false,
+      "obsidian-kanban:Create new board": false
     }
   },
   "active": "11dd21b88f2ce079",
   "lastOpenFiles": [
-    "Untitled.md",
+    "Buy State.md",
+    "Factory.md",
+    "Ideas.md",
     "Gameplay Loop.md",
-    "Ideas.md"
+    "TODO.md",
+    "Untitled.md"
   ]
 }

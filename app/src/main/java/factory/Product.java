@@ -53,9 +53,6 @@ public abstract class Product {
    */
   public void render() {
     Game.sketch.fill(0xFFFFFFFF);
-    if (getBoundingBox().isTouchingMouse()) {
-        Game.sketch.text(getValue().toString(), position.x, position.y + Factory.COMPONENT_SPACING + 2 * Game.sketch.textAscent());
-    }
     Game.sketch.pushMatrix();
     Game.sketch.rotate(rotation);
     Game.sketch.translate(position.x, position.y);
@@ -64,6 +61,9 @@ public abstract class Product {
     // Render components on top of product
     for (ComponentSocket component : components) {
       component.render(position);
+    }
+    if (getBoundingBox().isTouchingMouse()) {
+        getValue().render(getBoundingBox());
     }
   }
   

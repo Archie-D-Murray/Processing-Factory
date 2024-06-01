@@ -49,6 +49,9 @@ public class Factory extends PApplet {
         }
 
         ImageDataBase.populate(this);
+
+        Stats.statBackground = ImageDataBase.get("StatReadout.png");
+
         AnimationPool.populate(this);
 
         // Instantiate states
