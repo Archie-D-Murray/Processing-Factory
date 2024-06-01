@@ -9,10 +9,10 @@ public class Stats {
 
     private static PVector leftPort     = new PVector(0.25f, 0.088f);
     private static PVector rightPort    = new PVector(0.54f, 0.088f);
-    private static PVector speedPos     = new PVector(0.24f, 0.24f);
-    private static PVector firePowerPos = new PVector(0.24f, 0.45f);
-    private static PVector storagePos   = new PVector(0.24f, 0.56f);
-    private static PVector weightPos    = new PVector(0.24f, 0.77f);
+    private static PVector speedPos     = new PVector(0.24f, 0.24f, 0.66f); // Z is x offset for 
+    private static PVector firePowerPos = new PVector(0.24f, 0.45f, 0.66f); // value!
+    private static PVector storagePos   = new PVector(0.24f, 0.56f, 0.66f);
+    private static PVector weightPos    = new PVector(0.24f, 0.77f, 0.66f);
     public static PImage statBackground = null;
 
     public float speed;
@@ -80,10 +80,19 @@ public class Stats {
         Game.sketch.image(statBackground, renderPos);
         Game.sketch.textSize(12f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
-        Game.sketch.text(String.format("Speed: %d", Factory.round(speed)), stats.left() + stats.size.x * speedPos.x, stats.top() + stats.size.y * speedPos.y);
-        Game.sketch.text(String.format("Fire Power: %d", Factory.round(firePower)), stats.left() + stats.size.x * firePowerPos.x, stats.top() + stats.size.y * firePowerPos.y);
-        Game.sketch.text(String.format("Storage: %d", Factory.round(storage)), stats.left() + stats.size.x * storagePos.x, stats.top() + stats.size.y * storagePos.y);
-        Game.sketch.text(String.format("Weight: %d", Factory.round(weight)), stats.left() + stats.size.x * weightPos.x, stats.top() + stats.size.y * weightPos.y);
+        // Speed
+        Game.sketch.text("Speed", stats.left() + stats.size.x * speedPos.x, stats.top() + stats.size.y * speedPos.y);
+        Game.sketch.text(Factory.round(speed), stats.left() + stats.size.x * speedPos.z, stats.top() + stats.size.y * speedPos.y);
+        // Fire Power
+        Game.sketch.text("Fire Power", stats.left() + stats.size.x * firePowerPos.x, stats.top() + stats.size.y * firePowerPos.y);
+        Game.sketch.text(Factory.round(firePower), stats.left() + stats.size.x * firePowerPos.z, stats.top() + stats.size.y * firePowerPos.y);
+        // Storage
+        Game.sketch.text("Storage", stats.left() + stats.size.x * storagePos.x, stats.top() + stats.size.y * storagePos.y);
+        Game.sketch.text(Factory.round(storage), stats.left() + stats.size.x * storagePos.z, stats.top() + stats.size.y * storagePos.y);
+        // Weight
+        Game.sketch.text("Weight", stats.left() + stats.size.x * weightPos.x, stats.top() + stats.size.y * weightPos.y);
+        Game.sketch.text(Factory.round(weight), stats.left() + stats.size.x * weightPos.z, stats.top() + stats.size.y * weightPos.y);
+
         Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
         Game.sketch.strokeWeight(4f);
         if (stats.bottom() < boundingBox.position.y) { // Rendering above
