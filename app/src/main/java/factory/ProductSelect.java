@@ -29,7 +29,7 @@ public class ProductSelect extends Select {
 
   @Override protected void drawValue(PVector position) {
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text(stats.toString(), position.x, position.y + Factory.COMPONENT_SPACING);
+    stats.render(getBoundingBox(position));
   }
   
   public boolean mouseTouching(PVector position) {

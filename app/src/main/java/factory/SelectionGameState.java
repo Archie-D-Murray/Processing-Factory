@@ -70,7 +70,7 @@ public class SelectionGameState implements IState {
 
     private void drawTarget() {
         Game.sketch.textSize(40f);
-        Game.sketch.text(target.toString(), Game.sketch.width - Game.sketch.textWidth(target.toString()) * 0.75f, Game.sketch.textAscent() * 4f);
+        target.render(new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.1f));
         Game.sketch.textSize(18f);
     }
 

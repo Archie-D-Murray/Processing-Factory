@@ -196,7 +196,7 @@ public class Factory extends PApplet {
         return lerp(newMin, newMax, invLerp(oldMin, oldMax, value));
     }
 
-    public static void line(PVector pos1, PVector pos2) {
-        Game.sketch.line(pos1.x, pos1.y, pos2.x, pos2.y);
+    public void line(PVector pos1, PVector pos2) {
+        line(pos1.x, pos1.y, pos2.x, pos2.y);
     }
 }

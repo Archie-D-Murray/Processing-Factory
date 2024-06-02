@@ -54,7 +54,7 @@ public class Stats {
     @Override
     public String toString() {
         return String.format(
-            "SPEED: %d\nFIREPOWER : %d\nSTORAGE: %d\nWEIGHT: %d", 
+            "SPEED: %d\nFIREPOWER: %d\nSTORAGE: %d\nWEIGHT: %d", 
             Factory.round(speed),
             Factory.round(firePower),
             Factory.round(storage),
@@ -62,8 +62,113 @@ public class Stats {
         );
     }
 
+    public void render(PVector position) {
+        PVector renderPos = new PVector();
+        if (position.y + (float) statBackground.height * 0.5f < Game.sketch.height) { // Can render below
+            renderPos = PVector.add(position, new PVector(0, statBackground.height * 0.5f));
+        } else if (position.y - (float) statBackground.height * 0.5f > 0f) { // Can render above
+            renderPos = PVector.sub(position, new PVector(0, statBackground.height * 0.5f));
+        } else {
+            System.out.println("Not rendering!");
+            return;
+        }
+        renderPos.x += 0.1f * statBackground.width; // Want to render at 0.4 * width
+        renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
+        Game.sketch.image(statBackground, renderPos);
+        Game.sketch.textSize(12f);
+        Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
+        // Speed
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Speed", (position.x - statBackground.width * 0.5f) + statBackground.width * speedPos.x, (position.y) + statBackground.height * speedPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(speed), (position.x - statBackground.width * 0.5f) + statBackground.width * speedPos.z, (position.y) + statBackground.height * speedPos.y);
+        // Fire Power
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Fire Power", (position.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.x, (position.y) + statBackground.height * firePowerPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(firePower), (position.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.z, (position.y) + statBackground.height * firePowerPos.y);
+        // Storage
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Storage", (position.x - statBackground.width * 0.5f) + statBackground.width * storagePos.x, (position.y) + statBackground.height * storagePos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(storage), (position.x - statBackground.width * 0.5f) + statBackground.width * storagePos.z, (position.y) + statBackground.height * storagePos.y);
+        // Weight
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Weight", (position.x - statBackground.width * 0.5f) + statBackground.width * weightPos.x, (position.y) + statBackground.height * weightPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(weight), (position.x - statBackground.width * 0.5f) + statBackground.width * weightPos.z, (position.y) + statBackground.height * weightPos.y);
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
+    }
+
     /**
-    * @param position Position of component/product
+    * @param boundingBox BoundingBox of component/product to render stats of
+    */
+    public void render(BoundingBox boundingBox, boolean renderAbove) {
+        PVector renderPos = new PVector();
+        if (renderAbove) {
+            if (boundingBox.top() - (float) statBackground.height * 0.5f > 0f) { // Can render below
+                renderPos = PVector.sub(new PVector(boundingBox.position.x, boundingBox.top()), new PVector(0, statBackground.height * 0.5f));
+            } else if (boundingBox.bottom() + (float) statBackground.height * 0.5f < Game.sketch.height) { // Can render above
+                renderPos = PVector.add(new PVector(boundingBox.position.x, boundingBox.bottom()), new PVector(0, statBackground.height * 0.5f));
+            } else {
+                System.out.println("Not rendering!");
+                return;
+            }
+        } else {
+            if (boundingBox.bottom() + (float) statBackground.height * 0.5f < Game.sketch.height) { // Can render below
+                renderPos = PVector.add(new PVector(boundingBox.position.x, boundingBox.bottom()), new PVector(0, statBackground.height * 0.5f));
+            } else if (boundingBox.top() - (float) statBackground.height * 0.5f > 0f) { // Can render above
+                renderPos = PVector.sub(new PVector(boundingBox.position.x, boundingBox.top()), new PVector(0, statBackground.height * 0.5f));
+            } else {
+                System.out.println("Not rendering!");
+                return;
+            }
+        }
+        renderPos.x += 0.1f * statBackground.width;
+        renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
+        BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
+        Game.sketch.image(statBackground, renderPos);
+        Game.sketch.textSize(12f);
+        Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
+        // Speed
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Speed", stats.left() + stats.size.x * speedPos.x, stats.top() + stats.size.y * speedPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(speed), stats.left() + stats.size.x * speedPos.z, stats.top() + stats.size.y * speedPos.y);
+        // Fire Power
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Fire Power", stats.left() + stats.size.x * firePowerPos.x, stats.top() + stats.size.y * firePowerPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(firePower), stats.left() + stats.size.x * firePowerPos.z, stats.top() + stats.size.y * firePowerPos.y);
+        // Storage
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Storage", stats.left() + stats.size.x * storagePos.x, stats.top() + stats.size.y * storagePos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(storage), stats.left() + stats.size.x * storagePos.z, stats.top() + stats.size.y * storagePos.y);
+        // Weight
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.text("Weight", stats.left() + stats.size.x * weightPos.x, stats.top() + stats.size.y * weightPos.y);
+        Game.sketch.fill(0xFF299FB3);
+        Game.sketch.text(Factory.round(weight), stats.left() + stats.size.x * weightPos.z, stats.top() + stats.size.y * weightPos.y);
+        Game.sketch.fill(0xFFFFFFFF);
+        Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
+        Game.sketch.strokeWeight(4f);
+        if (stats.bottom() < boundingBox.position.y) { // Rendering above
+            Game.sketch.stroke(0xFF299FB3);
+            Game.sketch.line(boundingBox.position, new PVector(stats.left() + stats.size.x * leftPort.x, stats.bottom() - stats.size.y * leftPort.y));
+            Game.sketch.line(boundingBox.position, new PVector(stats.left() + stats.size.x * rightPort.x, stats.bottom() - stats.size.y * rightPort.y));
+            Game.sketch.stroke(0xFFFFFFFF);
+        } else {
+            Game.sketch.stroke(0xFF299FB3);
+            Game.sketch.line(boundingBox.position, new PVector(stats.left() + stats.size.x * leftPort.x, stats.top() + stats.size.y * leftPort.y));
+            Game.sketch.line(boundingBox.position, new PVector(stats.left() + stats.size.x * rightPort.x, stats.top() + stats.size.y * rightPort.y));
+            Game.sketch.stroke(0xFFFFFFFF);
+        }
+    }
+
+    /**
+    * @param boundingBox BoundingBox of component/product to render stats of
     */
     public void render(BoundingBox boundingBox) {
         PVector renderPos = new PVector();
@@ -75,8 +180,9 @@ public class Stats {
             System.out.println("Not rendering!");
             return;
         }
-        BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
+        renderPos.x += 0.1f * statBackground.width;
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
+        BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
         Game.sketch.image(statBackground, renderPos);
         Game.sketch.textSize(12f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
