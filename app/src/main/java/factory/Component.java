@@ -13,6 +13,7 @@ import processing.core.PApplet;
  */
 
 public abstract class Component implements IComponent {
+    public ComponentType type;
     protected float rotation;
     protected PImage image;
     public Stats stats;

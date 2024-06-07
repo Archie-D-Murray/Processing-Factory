@@ -1,12 +1,15 @@
 package factory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import processing.core.PVector;
 public class Config {
 
     public int currentLevel;
     public Level[] levels;
-	public ProductType[] unlockedProducts;
-    public ComponentType[] unlockedComponents;
+	public ArrayList<ProductType> unlockedProducts;
+    public ArrayList<ComponentType> unlockedComponents;
     
     public Config() {
         currentLevel = 0;
@@ -24,8 +27,8 @@ public class Config {
                 new ProductType[] { ProductType.NORMAL }
             )
         };
-        unlockedProducts = new ProductType[] { ProductType.LIGHT };
-        unlockedComponents = new ComponentType[] { ComponentType.GUN };
+        unlockedProducts = new ArrayList<ProductType>(Arrays.asList(ProductType.LIGHT));
+        unlockedComponents = new ArrayList<ComponentType>(Arrays.asList(ComponentType.FAN));
     }
 
     public class Level {

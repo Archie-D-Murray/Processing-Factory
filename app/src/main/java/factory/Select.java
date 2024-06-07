@@ -9,6 +9,7 @@ import processing.core.PVector;
  */
 public abstract class Select {
   public Stats stats;
+  public int cost;
   public PImage icon;
   protected final int HOVER_TINT = 0xFF444444;
 

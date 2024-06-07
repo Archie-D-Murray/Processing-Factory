@@ -24,7 +24,8 @@ public class PlayGameState implements IState {
     @Override
     public void onEnter() {
         PApplet.println("Entered play state");
-        this.componentOptions = Arrays.stream(Game.levelSelection.selectedComponents).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
+        this.componentOptions = Arrays.stream(Game.levelSelection.selectedComponents)
+                .map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
         int level = Game.config.currentLevel;
         int index = Game.random.nextInt(0, Game.config.levels.length);
         target = Game.config.levels[level].possibleTargets[index];
@@ -32,7 +33,7 @@ public class PlayGameState implements IState {
         PVector[] conveyorPositions = Game.config.levels[level].conveyorPositions;
         conveyor = new Conveyor(conveyorPositions, 2f);
         conveyor.addProduct(Product.createBase(Game.levelSelection.selectedBase));
-        crane = new Crane(componentOptions, conveyor);
+        crane = new Crane(conveyor);
         closestSocket = null;
     }
 
@@ -51,23 +52,19 @@ public class PlayGameState implements IState {
     @Override
     public void checkTransition() {
         if (conveyor.isFinished()) {
-            if (Game.config.currentLevel < Game.config.levels.length) {
-                Game.config.currentLevel++;
-                Game.switchState(new SelectionGameState());
-            } else {
-                Game.config.currentLevel = 0;
-                Game.switchState(new MenuGameState());
-            }
+            Game.switchState(new BuyGameState());
         }
     }
 
     @Override
-    public void onExit() { }
+    public void onExit() {
+    }
 
     @Override
-    public void keyDown(char key) { }
+    public void keyDown(char key) {
+    }
 
-   /**
+    /**
      * Returns closest product to mouse on conveyor
      */
     protected Product getClosestToMouse() {
@@ -135,22 +132,13 @@ public class PlayGameState implements IState {
                 + Factory.COMPONENT_SPACING * 0.5f; // Calculate padded start x value
         // Shows component values, keybinds and images
         for (int i = 0; i < componentOptions.length; i++) {
-            PVector position = new PVector(startPos + i * Factory.COMPONENT_SPACING, Game.sketch.height * 0.9f);
+            PVector position = new PVector(startPos + (i + 1) * Factory.COMPONENT_SPACING, Game.sketch.height * 0.9f);
             componentOptions[i].render(position);
             if (componentOptions[i].mouseTouching(position) && Game.mouseDown() && !crane.hasComponent()) {
-                crane.addComponent(Component.createComponent(componentOptions[i].type), componentOptions[i].type);
-                crane.setTarget(position);
+                crane.addComponent(Component.createComponent(componentOptions[i].type), position);
                 Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
-
-            }
         }
-
-    protected void flashMoney() {
-        // TODO: Fix bounds
-        Game.sketch.fill(0xAAFF0000);
-        Game.sketch.rect(0, 0, 100, 20);
-        Game.sketch.fill(0xFFFFFFFF);
     }
 
     /**
@@ -160,11 +148,10 @@ public class PlayGameState implements IState {
     protected void drawUI() {
         Game.sketch.textSize(40f);
         Game.sketch.fill(0xFFFFFFFF);
-        // TODO: Draw target!
         Game.sketch.textAlign(Factory.TOP, Factory.LEFT);
-        Game.sketch.text(String.format("Target: %s\nMoney: %d", target.toString(), Game.money), Game.sketch.width * 0.01f, Game.sketch.height * 0.05f);
+        Game.sketch.text(String.format("Money: %d", Game.money), Game.sketch.width * 0.01f, Game.sketch.height * 0.05f);
         Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
+        target.render(new PVector(Game.sketch.width * 0.1f, Game.sketch.height * 0.1f));
         drawComponents();
     }
 }
-

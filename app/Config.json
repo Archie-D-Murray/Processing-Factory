@@ -42,9 +42,9 @@
     }
   ],
   "unlockedProducts": [
-    "LIGHT"
+    "LIGHT", "HEAVY"
   ],
   "unlockedComponents": [
-    "GUN"
+    "FAN"
   ]
 }

@@ -13,18 +13,22 @@ public class ComponentSelect extends Select {
     case FAN:
       icon = ImageDataBase.get("FanComponent.png").copy();
       stats = FanComponent.stats();
+      cost = FanComponent.cost();
       break;
     case GUN:
       icon = ImageDataBase.get("GunComponent.png").copy();
       stats = GunComponent.stats();
+      cost = GunComponent.cost();
       break;
     case SHIELD:
       icon = ImageDataBase.get("ShieldComponent.png").copy();
       stats = ShieldComponent.stats();
+      cost = ShieldComponent.cost();
       break;
     default:
       icon = ImageDataBase.get("Default.png").copy();
       stats = new Stats(0, 0, 0, 0);
+      cost = 0;
     }
     this.type = type;
   }

@@ -12,6 +12,7 @@ public class GunComponent extends Component {
         super(ImageDataBase.get("GunComponent.png"), rotation);
         this.rotationSpeed = rotationSpeed;
         this.stats = stats();
+        this.type = ComponentType.GUN;
     }
 
     @Override
@@ -30,4 +31,7 @@ public class GunComponent extends Component {
         return new Stats(0f, 10f, 0f, 15f);
     }
 
+    public static int cost() {
+        return 250;
+    }
 }

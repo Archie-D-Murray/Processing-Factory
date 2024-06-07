@@ -36,7 +36,6 @@ public class Factory extends PApplet {
         Game.sketch = this;
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Game.config = gson.fromJson(String.join("", loadStrings("Config.json")), Config.class);
-        println("Sketch path: " + sketchPath());
         frameRate(FPS);
         imageMode(CENTER);
         rectMode(CENTER);
@@ -55,8 +54,10 @@ public class Factory extends PApplet {
         AnimationPool.populate(this);
 
         // Instantiate states
-        Game.state = (IState) new MenuGameState();
+        // Game.state = (IState) new MenuGameState();
         // state = (IState) new TestGameState();
+        Game.money = 600;
+        Game.state = new BuyGameState();
 
         // Enter state
         Game.state.onEnter();

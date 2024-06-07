@@ -1,12 +1,13 @@
 package factory;
 
+import java.util.Arrays;
 import java.util.stream.*;
 
 import processing.core.PImage;
 import processing.core.PVector;
 
 public class Stats {
-
+    private static float centerOffset = 0.1f; // Actually 0.4 but adding 0.1 * width is faster
     private static PVector leftPort     = new PVector(0.25f, 0.088f);
     private static PVector rightPort    = new PVector(0.54f, 0.088f);
     private static PVector speedPos     = new PVector(0.24f, 0.24f, 0.70f); // Z is x offset for 
@@ -41,7 +42,17 @@ public class Stats {
             other.storage / storage,
             weight / other.weight
         };
-        return (float) IntStream.range(0, stats.length).mapToDouble(i -> stats[i]).sum() / stats.length;
+        System.out.print("Stats: ");
+        float sum = 0f;
+        for (float stat : stats) {
+            if (Float.isNaN(stat)) {
+                stat = 1f;
+            }
+            sum += stat;
+            System.out.print(stat + " ");
+        }
+        System.out.println();
+        return sum / (float) stats.length;
     }
 
 	public void add(Stats stats) {
@@ -72,10 +83,9 @@ public class Stats {
             System.out.println("Not rendering!");
             return;
         }
-        renderPos.x += 0.1f * statBackground.width; // Want to render at 0.4 * width
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
         Game.sketch.image(statBackground, renderPos);
-        Game.sketch.textSize(12f);
+        Game.sketch.textSize(24f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
         // Speed
         Game.sketch.fill(0xFFFFFFFF);
@@ -125,11 +135,11 @@ public class Stats {
                 return;
             }
         }
-        renderPos.x += 0.1f * statBackground.width;
+        renderPos.x += centerOffset * statBackground.width;
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
         BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
         Game.sketch.image(statBackground, renderPos);
-        Game.sketch.textSize(12f);
+        Game.sketch.textSize(24f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
         // Speed
         Game.sketch.fill(0xFFFFFFFF);
@@ -180,11 +190,11 @@ public class Stats {
             System.out.println("Not rendering!");
             return;
         }
-        renderPos.x += 0.1f * statBackground.width;
+        renderPos.x += centerOffset * statBackground.width;
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
         BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
         Game.sketch.image(statBackground, renderPos);
-        Game.sketch.textSize(12f);
+        Game.sketch.textSize(24f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
         // Speed
         Game.sketch.fill(0xFFFFFFFF);

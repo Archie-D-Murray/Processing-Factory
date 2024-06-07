@@ -14,6 +14,7 @@ public class FanComponent extends Component {
     super(ImageDataBase.get("FanComponent.png"), rotation);
     this.rotationSpeed = rotationSpeed;
     this.stats = stats();
+    this.type = ComponentType.FAN;
   }
   
   // Have fan rotate
@@ -29,5 +30,9 @@ public class FanComponent extends Component {
 
   public static Stats stats() {
     return new Stats(5f, 0f, 0f, 10f);
+  }
+
+  public static int cost() {
+      return 100;
   }
 }

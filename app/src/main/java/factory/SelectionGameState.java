@@ -1,7 +1,6 @@
 package factory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import processing.core.PVector;
 
@@ -18,8 +17,9 @@ public class SelectionGameState implements IState {
 	public void onEnter() {
         Factory.println("Entered select state");
         target = Game.config.getCurrentLevel().possibleTargets[Game.random.nextInt(0, Game.config.getCurrentLevel().possibleTargets.length)];
-        componentOptions = Arrays.stream(Game.config.unlockedComponents).map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
-        productOptions = Arrays.stream(Game.config.unlockedProducts).map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);
+        componentOptions = Game.config.unlockedComponents.stream().map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
+        productOptions = Game.config.unlockedProducts.stream().map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);
+        System.out.printf("Unlocked Components: %d, Unlocked Products: %d\n", componentOptions.length, productOptions.length);
         selectedComponents = new ArrayList<ComponentType>();
         selectedBase = null;
         build = new Button("BUILD!", new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.8f), new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.2f), new int[] { 0xFF774499, 0xFFDDDDDD });
@@ -52,7 +52,7 @@ public class SelectionGameState implements IState {
                 selectedComponents.add(componentOptions[i].type);
                 Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
-            position.x += i * Factory.COMPONENT_SPACING;
+            position.x += Factory.COMPONENT_SPACING;
         }
 	}
 
@@ -64,7 +64,7 @@ public class SelectionGameState implements IState {
                 selectedBase = productOptions[i].type;
                 Game.mouseInputDelay = Factory.MOUSE_DELAY;
             }
-            position.x += i * Factory.COMPONENT_SPACING;
+            position.x += Factory.COMPONENT_SPACING;
         }	
 	}
 
