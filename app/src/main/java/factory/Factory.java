@@ -54,10 +54,10 @@ public class Factory extends PApplet {
         AnimationPool.populate(this);
 
         // Instantiate states
-        // Game.state = (IState) new MenuGameState();
+        Game.state = (IState) new MenuGameState();
         // state = (IState) new TestGameState();
-        Game.money = 600;
-        Game.state = new BuyGameState();
+        // Game.money = 600;
+        // Game.state = new BuyGameState();
 
         // Enter state
         Game.state.onEnter();
