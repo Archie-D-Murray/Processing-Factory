@@ -6,23 +6,18 @@ kanban-plugin: board
 
 ## Todo
 
-- [ ] Crane Changes
-	- [ ] Put down component
 
 
 ## In Progress
 
-- [ ] Buy State UI
-	- [ ] Icons for unlocked components
-	- [ ] Icons for unlocked products
 - [ ] Play State UI
 	- [ ] Live comparison to target
 
 
 ## Back Burner
 
-- [ ] Buy UI Icon/Inventory
-- [ ] Redo Stat Panel
+- [ ] Crane Changes
+	- [ ] Put down component
 
 
 ## Done
@@ -31,6 +26,11 @@ kanban-plugin: board
 	- [x] Buy new components
 	- [x] Get money from build
 	- [x] Advance to next level
+- [ ] Buy State UI
+	- [x] Icons for unlocked components
+	- [x] Icons for unlocked products
+- [ ] Buy UI Icon/Inventory
+- [ ] Redo Stat Panel
 - [ ] Stats Rendering
 	- [x] Individual stats
 	- [x] Background panel

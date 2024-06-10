@@ -1,19 +1,15 @@
 package factory;
 
-import java.util.Arrays;
-import java.util.stream.*;
-
 import processing.core.PImage;
 import processing.core.PVector;
 
 public class Stats {
-    private static float centerOffset = 0.1f; // Actually 0.4 but adding 0.1 * width is faster
-    private static PVector leftPort     = new PVector(0.25f, 0.088f);
-    private static PVector rightPort    = new PVector(0.54f, 0.088f);
-    private static PVector speedPos     = new PVector(0.24f, 0.24f, 0.70f); // Z is x offset for 
-    private static PVector firePowerPos = new PVector(0.24f, 0.45f, 0.70f); // value!
-    private static PVector storagePos   = new PVector(0.24f, 0.56f, 0.70f);
-    private static PVector weightPos    = new PVector(0.24f, 0.77f, 0.70f);
+    private static PVector leftPort     = new PVector(0.248f, 0.033f);
+    private static PVector rightPort    = new PVector(0.753f, 0.033f);
+    private static PVector speedPos     = new PVector(0.240f, 0.20f, 0.70f); // Z is x offset for 
+    private static PVector firePowerPos = new PVector(0.240f, 0.40f, 0.70f); // value!
+    private static PVector storagePos   = new PVector(0.240f, 0.60f, 0.70f);
+    private static PVector weightPos    = new PVector(0.240f, 0.80f, 0.70f);
     public static PImage statBackground = null;
 
     public float speed;
@@ -135,7 +131,6 @@ public class Stats {
                 return;
             }
         }
-        renderPos.x += centerOffset * statBackground.width;
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
         BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
         Game.sketch.image(statBackground, renderPos);
@@ -190,7 +185,6 @@ public class Stats {
             System.out.println("Not rendering!");
             return;
         }
-        renderPos.x += centerOffset * statBackground.width;
         renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
         BoundingBox stats = new BoundingBox(renderPos, new PVector(statBackground.width, statBackground.height));
         Game.sketch.image(statBackground, renderPos);
