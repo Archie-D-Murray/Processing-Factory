@@ -1,6 +1,8 @@
 package factory;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -46,6 +48,11 @@ public class ImageDataBase {
         if (imageDataBase.containsKey(imageName)) {
             return imageDataBase.get(imageName);
         } else {
+            try {
+                throw new Exception(String.format("Could not find image %s", imageName));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             return defaultImage;
         }
     }

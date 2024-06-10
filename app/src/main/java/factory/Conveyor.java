@@ -51,7 +51,7 @@ public class Conveyor {
             }
         }
         if (move) {
-            product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed);
+            product.position = Factory.moveTowards(product.position, positions[product.targetPosIndex], conveyorSpeed * Game.deltaTime);
         }
         product.render();
         float startAngle = PVector.angleBetween(new PVector(0f, 1f), PVector.sub(positions[1], positions[0]).normalize());
@@ -90,7 +90,7 @@ public class Conveyor {
     private void renderBelt() {
         sendToFront.clear();
         for (ConveyorSegment segment : conveyorSegments) {
-            segment.update(positions, move);
+            segment.update(positions, move, conveyorSpeed);
             if (segment.sendToFront) {
                 sendToFront.add(segment);
             }
@@ -100,13 +100,6 @@ public class Conveyor {
             conveyorSegments.add(segment);
             segment.sendToFront = false;
         }
-        // Game.sketch.strokeWeight(size / 2);
-        // Game.sketch.stroke(colour);
-        // for (int i = 0; i < positions.length - 1; i++) { // Last index has no next point to draw to
-        //     Game.sketch.line(positions[i], positions[i + 1]); // Using line allows for diagonal conveyor belts
-        // }
-        // Game.sketch.strokeWeight(0f); // Make sure not to create strange behaviour for other shape rendering
-        // Game.sketch.stroke(0x00FFFFFF);
     }
 
     private float beltLength() {

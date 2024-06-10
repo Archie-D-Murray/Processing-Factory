@@ -6,8 +6,8 @@ import processing.core.PVector;
 public class Stats {
     private static PVector leftPort     = new PVector(0.248f, 0.033f);
     private static PVector rightPort    = new PVector(0.753f, 0.033f);
-    private static PVector speedPos     = new PVector(0.240f, 0.20f, 0.70f); // Z is x offset for 
-    private static PVector firePowerPos = new PVector(0.240f, 0.40f, 0.70f); // value!
+    private static PVector speedPos     = new PVector(0.240f, 0.20f, 0.70f); // Z is x offset for value
+    private static PVector firePowerPos = new PVector(0.240f, 0.40f, 0.70f); 
     private static PVector storagePos   = new PVector(0.240f, 0.60f, 0.70f);
     private static PVector weightPos    = new PVector(0.240f, 0.80f, 0.70f);
     public static PImage statBackground = null;

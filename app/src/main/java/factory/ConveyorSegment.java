@@ -4,9 +4,7 @@ import processing.core.PImage;
 import processing.core.PVector;
 
 public class ConveyorSegment {
-    final float SPEED = 50f;
     final float TURNING_DISTANCE = 5f;
-    final float TURNING_SPEED = 90f / (2 * TURNING_DISTANCE / SPEED);
     private PImage segment;
     private int targetIndex;
     private PVector position;
@@ -21,7 +19,7 @@ public class ConveyorSegment {
         sendToFront = false;
     }
 
-    public void update(PVector[] points, boolean move) {
+    public void update(PVector[] points, boolean move, float speed) {
         if (move) {
             if (PVector.dist(position, points[targetIndex]) <= 0.01f) {
                 if (targetIndex == points.length - 1) {
@@ -32,7 +30,7 @@ public class ConveyorSegment {
                     targetIndex++;
                 }
             }
-            position = Factory.moveTowards(position, points[targetIndex], SPEED * Game.deltaTime);
+            position = Factory.moveTowards(position, points[targetIndex], speed * Game.deltaTime);
             if (targetIndex != points.length - 1 && PVector.dist(position, points[0]) >= TURNING_DISTANCE) {
                 if (PVector.dist(position, points[targetIndex]) <= TURNING_DISTANCE || PVector.dist(position, points[targetIndex - 1]) <= TURNING_DISTANCE) {
                     float targetRotation = PVector.angleBetween(new PVector(0, 1), PVector.sub(points[targetIndex + 1], points[targetIndex]));

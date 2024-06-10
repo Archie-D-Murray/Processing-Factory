@@ -31,7 +31,7 @@ public class PlayGameState implements IState {
         target = Game.config.levels[level].possibleTargets[index];
         reciever = new ProductReceiver();
         PVector[] conveyorPositions = Game.config.levels[level].conveyorPositions;
-        conveyor = new Conveyor(conveyorPositions, 2f);
+        conveyor = new Conveyor(conveyorPositions, 50f);
         conveyor.addProduct(Product.createBase(Game.levelSelection.selectedBase));
         crane = new Crane(conveyor);
         closestSocket = null;
