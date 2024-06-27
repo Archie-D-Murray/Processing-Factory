@@ -4,6 +4,8 @@ import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
 
+enum AnimationType { COMPONENT_ADD, SHIELD_PARTICLES, GUN_FLAME }
+
 /**
  * Class to allow for frame by frame animation
  * Animations are only to be constructed by the AnimationPool class

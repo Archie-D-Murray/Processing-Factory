@@ -10,6 +10,9 @@ public class InventoryItem {
         public PImage icon;
         public PImage background;
         public BoundingBox boundingBox;
+		public ProductType productType;
+		public ComponentType componentType;
+        public int cost;
 
         public InventoryItem() {
             background = Inventory.itemBackground.copy();
@@ -17,6 +20,8 @@ public class InventoryItem {
             stats = null;
             icon = null;
             boundingBox = new BoundingBox(new PVector(), new PVector(Factory.COMPONENT_SPACING, Factory.COMPONENT_SPACING));
+            productType = null;
+            componentType = null;
         }
 
         public InventoryItem(ComponentSelect data) {
@@ -29,8 +34,11 @@ public class InventoryItem {
                 float resize = background.width * 0.9f / max;
                 icon.resize(Factory.round(icon.width * resize), Factory.round(icon.height * resize));
             }
-            boundingBox = data.getBoundingBox(new PVector());
+            boundingBox = data.boundingBox;
             isProduct = false;
+            componentType = data.type;
+            productType = null;
+            cost = data.cost;
         }
 
         public InventoryItem(ProductSelect data) {
@@ -43,14 +51,21 @@ public class InventoryItem {
                 float resize = background.width * 0.9f / max;
                 icon.resize(Factory.round(icon.width * resize), Factory.round(icon.height * resize));
             }
-            boundingBox = data.getBoundingBox(new PVector());
+            boundingBox = data.boundingBox;
             isProduct = true;
+            productType = data.type;
+            componentType = null;
+            cost = data.cost;
         }
 
         public void render() {
             Game.sketch.image(background, boundingBox.position);
             if (hasData) {
+                if (boundingBox.isTouchingMouse()) {
+                    Game.sketch.tint(0xFF444444);
+                }
                 Game.sketch.image(icon, boundingBox.position);
+                Game.sketch.tint(0xFFFFFFFF);
             }
         }
     }

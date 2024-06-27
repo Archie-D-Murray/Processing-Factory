@@ -29,7 +29,7 @@ public class FanComponent extends Component {
   }
 
   public static Stats stats() {
-    return new Stats(5f, 0f, 0f, 10f);
+    return new Stats(5f, 0f, 0f, 60f);
   }
 
   public static int cost() {

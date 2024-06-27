@@ -4,6 +4,17 @@ import processing.core.PImage;
 import processing.core.PVector;
 import processing.core.PApplet;
 
+enum ComponentType { 
+  FAN, GUN, SHIELD;
+  
+  // Caching as only needs to be computed once
+  public static ComponentType[] types = ComponentType.values();
+  
+  public static ComponentType fromInt(int x) {
+    return types[x];
+  }
+}
+
 /**
  * Components can be added to a product using a ComponentSocket instance as a
  * tuple

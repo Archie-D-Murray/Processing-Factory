@@ -1,29 +1,31 @@
 package factory;
 
-import java.util.Arrays;
-
 import processing.core.PVector;
 
 public class BuyGameState implements IState {
 
-    private ComponentSelect[] componentOptions;
-    private ProductSelect[] productOptions;
+    private ItemMenu componentOptions;
+    private ItemMenu productOptions;
     private Button confirmButton;
     private Inventory inventory;
 
     @Override
     public void onEnter() {
-        componentOptions = Arrays
-                .stream(Game.config.getCurrentLevel().componentUnlocks)
-                .map((ComponentType type) -> new ComponentSelect(type))
-                .toArray(ComponentSelect[]::new);
-        productOptions = Arrays
-                .stream(Game.config.getCurrentLevel().productUnlocks)
-                .map((ProductType type) -> new ProductSelect(type))
-                .toArray(ProductSelect[]::new);
+        componentOptions = new ItemMenu(
+            Game.config.unlockedComponents.toArray(ComponentType[]::new), 
+            new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.2f)
+        );
+        productOptions = new ItemMenu(
+            Game.config.unlockedProducts.toArray(ProductType[]::new), 
+            new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.2f)
+        );
         confirmButton = new Button("Confirm", new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.8f),
                 new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.1f), new int[] { 0xFF558866, 0xFFDDDDDD });
-        inventory = new Inventory(new PVector(Game.sketch.width * 0.25f, Game.sketch.height * 0.5f));
+        inventory = new Inventory(
+                new PVector(Game.sketch.width * 0.25f, Game.sketch.height * 0.5f),
+                Game.config.unlockedComponents.toArray(ComponentType[]::new),
+                Game.config.unlockedProducts.toArray(ProductType[]::new)
+        );
     }
 
     @Override
@@ -50,47 +52,39 @@ public class BuyGameState implements IState {
     }
 
     private void updateComponentOptions() {
-        PVector position = new PVector(
-                Game.sketch.width / 2f - 0.5f * (componentOptions.length - 1) * Factory.COMPONENT_SPACING,
-                Game.sketch.height * 0.8f);
-        for (int i = 0; i < componentOptions.length; i++) {
-            componentOptions[i].render(position);
-            renderCost(componentOptions[i].getBoundingBox(position), componentOptions[i].cost, false);
-            if (componentOptions[i].isTouchingMouse(position) && Game.mouseDown()
-                    && !Game.config.unlockedComponents.contains(componentOptions[i].type)) {
-                if (Game.money >= componentOptions[i].cost) {
-                    Game.config.unlockedComponents.add(componentOptions[i].type);
+        componentOptions.drawBackground();
+        for (InventoryItem item : componentOptions) {
+            item.render();
+            renderCost(item.boundingBox, item.cost, false);
+            if (item.boundingBox.isTouchingMouse() && Game.mouseDown() && !Game.config.unlockedComponents.contains(item.componentType)) {
+                if (Game.money >= item.cost) {
+                    Game.config.unlockedComponents.add(item.componentType);
                     Game.mouseInputDelay = Factory.MOUSE_DELAY;
-                    Game.money -= componentOptions[i].cost;
-                    inventory.insertItem(new InventoryItem(componentOptions[i]));
+                    Game.money -= item.cost;
+                    inventory.insertItem(item);
                 } else {
                     flashMoney();
                 }
             }
-            position.x += Factory.COMPONENT_SPACING;
         }
     }
 
 	private void updateProductOptions() {
-        PVector position = new PVector(
-                Game.sketch.width / 2f - 0.5f * (productOptions.length - 1) * Factory.COMPONENT_SPACING,
-                Game.sketch.height * 0.4f);
-        for (int i = 0; i < productOptions.length; i++) {
-            productOptions[i].render(position);
-            renderCost(productOptions[i].getBoundingBox(position), productOptions[i].cost, true);
-            if (productOptions[i].isTouchingMouse(position) && Game.mouseDown()
-                    && !Game.config.unlockedProducts.contains(productOptions[i].type)) {
-                if (Game.money >= productOptions[i].cost) {
-                    Game.config.unlockedProducts.add(productOptions[i].type);
+        productOptions.drawBackground();
+       for (InventoryItem item : productOptions) {
+            item.render();
+            renderCost(item.boundingBox, item.cost, false);
+            if (item.boundingBox.isTouchingMouse() && Game.mouseDown() && !Game.config.unlockedProducts.contains(item.productType)) {
+                if (Game.money >= item.cost) {
+                    Game.config.unlockedProducts.add(item.productType);
                     Game.mouseInputDelay = Factory.MOUSE_DELAY;
-                    Game.money -= productOptions[i].cost;
-                    inventory.insertItem(new InventoryItem(productOptions[i]));
+                    Game.money -= item.cost;
+                    inventory.insertItem(item);
                 } else {
                     flashMoney();
                 }
             }
-            position.x += Factory.COMPONENT_SPACING;
-        }
+        } 
     }
 
     private void renderCost(BoundingBox boundingBox, int cost, boolean renderAbove) {
@@ -107,7 +101,7 @@ public class BuyGameState implements IState {
     @Override
     public void checkTransition() {
         if (confirmButton.isClicked) {
-            if (Game.config.currentLevel >= Game.config.levels.length) {
+            if (Game.config.currentLevel >= Game.config.levels.length - 1) {
                 Game.config = new Config();
                 Game.switchState(new MenuGameState());
             } else {

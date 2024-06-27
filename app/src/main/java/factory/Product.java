@@ -6,6 +6,21 @@ import java.util.Arrays;
 import processing.core.PImage;
 import processing.core.PVector;
 
+enum ProductType { 
+  
+  LIGHT, NORMAL, HEAVY;
+  
+  public static ProductType[] types = ProductType.values();
+  
+  public static ProductType getRandom() {
+    return types[Game.random.nextInt(types.length)];
+  }
+  
+  public static ProductType fromInt(int i) {
+    return types[i];
+  }
+}
+
 /**
  * Base class representing a Product
  */

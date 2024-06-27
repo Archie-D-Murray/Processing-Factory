@@ -8,30 +8,6 @@
         "type": "tabs",
         "children": [
           {
-            "id": "4300db2f9c27db53",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Ideas.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
-            "id": "769bb746bc496aa7",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Gameplay Loop.md",
-                "mode": "source",
-                "source": false
-              }
-            }
-          },
-          {
             "id": "11dd21b88f2ce079",
             "type": "leaf",
             "state": {
@@ -50,8 +26,7 @@
               }
             }
           }
-        ],
-        "currentTab": 2
+        ]
       }
     ],
     "direction": "vertical"
@@ -184,10 +159,10 @@
   },
   "active": "11dd21b88f2ce079",
   "lastOpenFiles": [
-    "Buy State.md",
-    "Factory.md",
-    "Ideas.md",
     "Gameplay Loop.md",
+    "Ideas.md",
+    "Factory.md",
+    "Buy State.md",
     "TODO.md",
     "Untitled.md"
   ]

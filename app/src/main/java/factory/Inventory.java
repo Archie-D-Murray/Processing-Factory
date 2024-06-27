@@ -1,14 +1,18 @@
 package factory;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 import processing.core.PImage;
 import processing.core.PVector;
 
-public class Inventory {
+public class Inventory implements Iterable<InventoryItem> {
     private final int MAX_COMPONENTS = 9;
     private final int MAX_PRODUCTS = 6;
 
     public static PImage inventoryBackground;
     public static PImage itemBackground;
+	public static PImage selectImage;
 
     private InventoryItem[] inventoryItems = new InventoryItem[MAX_PRODUCTS + MAX_COMPONENTS];
     private PVector position;
@@ -16,20 +20,22 @@ public class Inventory {
     public static void init() {
         itemBackground = ImageDataBase.get("ItemBackground.png");
         inventoryBackground = ImageDataBase.get("InventoryBackground.png");
+        selectImage = ImageDataBase.get("Select.png");
+        selectImage.resize(Factory.round(itemBackground.width * 0.95f), Factory.round(itemBackground.height * 0.95f));
     }
 
-    public Inventory(PVector position) {
+    public Inventory(PVector position, ComponentType[] initialComponents, ProductType[] initialProducts) {
         this.position = position;
         for (int i = 0; i < MAX_COMPONENTS; i++) {
-            if (i < Game.config.unlockedComponents.size()) {
-                inventoryItems[i] = new InventoryItem(new ComponentSelect(Game.config.unlockedComponents.get(i)));
+            if (i < initialComponents.length) {
+                inventoryItems[i] = new InventoryItem(new ComponentSelect(initialComponents[i]));
             } else {
                 inventoryItems[i] = new InventoryItem();
             }
         }
         for (int i = 0; i < MAX_PRODUCTS; i++) {
-            if (i < Game.config.unlockedProducts.size()) {
-                inventoryItems[MAX_COMPONENTS + i] = new InventoryItem(new ProductSelect(Game.config.unlockedProducts.get(i)));
+            if (i < initialProducts.length) {
+                inventoryItems[MAX_COMPONENTS + i] = new InventoryItem(new ProductSelect(initialProducts[i], new PVector()));
             } else {
                 inventoryItems[MAX_COMPONENTS + i] = new InventoryItem();
             }
@@ -117,4 +123,9 @@ public class Inventory {
             item.render();
         }
     }
+
+	@Override
+	public Iterator<InventoryItem> iterator() {
+		return Arrays.stream(inventoryItems).iterator();
+	}
 }

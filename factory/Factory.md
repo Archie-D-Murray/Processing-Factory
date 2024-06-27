@@ -10,14 +10,10 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] Play State UI
-	- [ ] Live comparison to target
 
 
 ## Back Burner
 
-- [ ] Crane Changes
-	- [ ] Put down component
 
 
 ## Done
@@ -26,6 +22,10 @@ kanban-plugin: board
 	- [x] Buy new components
 	- [x] Get money from build
 	- [x] Advance to next level
+- [ ] Play State UI
+	- [x] Live comparison to target
+- [ ] Crane Changes
+	- [x] Put down component
 - [ ] Buy State UI
 	- [x] Icons for unlocked components
 	- [x] Icons for unlocked products

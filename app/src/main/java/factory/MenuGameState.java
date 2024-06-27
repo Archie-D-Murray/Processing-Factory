@@ -39,7 +39,7 @@ class MenuGameState implements IState {
   @Override public void update() {
     Game.sketch.textSize(48f);
     Game.sketch.fill(0xFFFFFFFF);
-    Game.sketch.text("Factory Game", Game.sketch.width * 0.5f - Game.sketch.textWidth("Factory Game") * 0.5f, Game.sketch.height * 0.15f + Game.sketch.textAscent() * 0.5f);
+    Game.sketch.text("Factory Game", Game.sketch.width * 0.5f, Game.sketch.height * 0.15f);
     Game.sketch.textSize(18f);
     playButton.update();
     tutorialButton.update();

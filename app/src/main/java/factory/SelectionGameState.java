@@ -7,22 +7,23 @@ import processing.core.PVector;
 public class SelectionGameState implements IState {
 
     private Stats target;
-    private ComponentSelect[] componentOptions;
-    private ProductSelect[] productOptions;
     private ArrayList<ComponentType> selectedComponents;
     private ProductType selectedBase;
     private Button build;
+    private Inventory inventory;
 
 	@Override
 	public void onEnter() {
         Factory.println("Entered select state");
         target = Game.config.getCurrentLevel().possibleTargets[Game.random.nextInt(0, Game.config.getCurrentLevel().possibleTargets.length)];
-        componentOptions = Game.config.unlockedComponents.stream().map((ComponentType type) -> new ComponentSelect(type)).toArray(ComponentSelect[]::new);
-        productOptions = Game.config.unlockedProducts.stream().map((ProductType type) -> new ProductSelect(type)).toArray(ProductSelect[]::new);
-        System.out.printf("Unlocked Components: %d, Unlocked Products: %d\n", componentOptions.length, productOptions.length);
         selectedComponents = new ArrayList<ComponentType>();
         selectedBase = null;
         build = new Button("BUILD!", new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.8f), new PVector(Game.sketch.width * 0.2f, Game.sketch.height * 0.2f), new int[] { 0xFF774499, 0xFFDDDDDD });
+        inventory = new Inventory(
+                new PVector(Game.sketch.width * 0.25f, Game.sketch.height * 0.5f),
+                Game.config.unlockedComponents.toArray(ComponentType[]::new),
+                Game.config.unlockedProducts.toArray(ProductType[]::new)
+        );
 	}
 
 	@Override
@@ -33,61 +34,42 @@ public class SelectionGameState implements IState {
 
 	@Override
 	public void update() {
-        drawComponentOptions();
-        drawProductOptions();
         Game.sketch.tint(0xFFFFFFFF);
         Game.sketch.fill(0xFFFFFFFF);
         drawTarget();
-        drawSelection();
+        inventory.renderUnlocked();
+        for (InventoryItem item : inventory) {
+            if (item.hasData) {
+                boolean isSelected = item.isProduct ? item.productType == selectedBase : selectedComponents.contains(item.componentType);
+                if (isSelected) {
+                    Game.sketch.image(Inventory.selectImage, item.boundingBox.position);
+                }
+            }
+            if (item.boundingBox.isTouchingMouse() && item.hasData) {
+                
+                item.stats.render(item.boundingBox);
+                if (Game.mouseDown()) {
+                    Game.mouseInputDelay = Factory.MOUSE_DELAY;
+                    if (item.isProduct) {
+                        selectedBase = item.productType;
+                    } else {
+                        selectedComponents.add(item.componentType);
+                    }
+                }
+            }
+        }
         if (selectedBase != null && !selectedComponents.isEmpty()) {
             build.update();
         }
 	}
 
-	private void drawComponentOptions() {
-        PVector position = new PVector(Game.sketch.width / 2f - 0.5f * (componentOptions.length - 1) * Factory.COMPONENT_SPACING, Game.sketch.height * 0.4f);
-		for (int i = 0; i < componentOptions.length; i++) {
-            componentOptions[i].render(position);
-            if (componentOptions[i].isTouchingMouse(position) && Game.mouseDown()) {
-                selectedComponents.add(componentOptions[i].type);
-                Game.mouseInputDelay = Factory.MOUSE_DELAY;
-            }
-            position.x += Factory.COMPONENT_SPACING;
-        }
-	}
-
-	private void drawProductOptions() {
-        PVector position = new PVector(Game.sketch.width / 2f - 0.5f * (productOptions.length - 1) * Factory.COMPONENT_SPACING, Game.sketch.height * 0.8f);
-		for (int i = 0; i < productOptions.length; i++) {
-            productOptions[i].render(position);
-            if (productOptions[i].isTouchingMouse(position) && Game.mouseDown()) {
-                selectedBase = productOptions[i].type;
-                Game.mouseInputDelay = Factory.MOUSE_DELAY;
-            }
-            position.x += Factory.COMPONENT_SPACING;
-        }	
-	}
-
     private void drawTarget() {
         Game.sketch.textSize(40f);
-        target.render(new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.1f));
-        Game.sketch.textSize(18f);
-    }
-
-    private void drawSelection() {
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
-        if (!selectedComponents.isEmpty()) {
-            String components = String.join(", ", selectedComponents.stream().map(x -> x.toString()).toList());
-            Game.sketch.text("Selected Components: " + components, Game.sketch.width * 0.1f, Game.sketch.height * 0.1f);
-        } else {
-            Game.sketch.text("Selected Components: NONE", Game.sketch.width * 0.1f, Game.sketch.height * 0.1f);
-        }
-        if (selectedBase != null) {
-            Game.sketch.text("Selected Base: " + selectedBase.toString(), Game.sketch.width * 0.1f, Game.sketch.height * 0.1f + Game.sketch.textAscent() * 1.5f);
-        } else {
-            Game.sketch.text("Selected Base: NONE", Game.sketch.width * 0.1f, Game.sketch.height * 0.1f + Game.sketch.textAscent() * 1.5f);
-        }
+        Game.sketch.text("Target:", Game.sketch.width * 0.8f - Stats.statBackground.width * 0.5f, Game.sketch.height * 0.2f - Stats.statBackground.height * 0.5f - Game.sketch.textAscent());
         Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
+        target.render(new PVector(Game.sketch.width * 0.8f, Game.sketch.height * 0.2f));
+        Game.sketch.textSize(18f);
     }
 
 	@Override

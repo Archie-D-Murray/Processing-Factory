@@ -27,10 +27,10 @@
       ],
       "possibleTargets": [
         {
-          "speed": 10.0,
+          "speed": 50.0,
           "firePower": 0.0,
           "storage": 10.0,
-          "weight": 100.0
+          "weight": 150.0
         }
       ],
       "componentUnlocks": [

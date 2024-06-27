@@ -4,6 +4,7 @@ import processing.core.PImage;
 import processing.core.PVector;
 
 public class Crane {
+
     private static final float OFFSET_MAGNITUDE = 50f;
     final float MAX_SPEED = 500;
     final float MIN_SPEED = 50;
@@ -25,6 +26,7 @@ public class Crane {
     private boolean showComponent;
     private Conveyor conveyor;
     private boolean goingToProduct;
+    private boolean removingComponent;
 
     public Crane(Conveyor conveyor) {
         this.horizontal = ImageDataBase.get("CraneHorizontal.png").copy();
@@ -40,13 +42,15 @@ public class Crane {
         target = null;
         socket = null;
         startPos = new PVector(Game.sketch.width / 2, Game.sketch.height / 2);
-        targetPositions = new PVector[] { new PVector(), new PVector() };
+        targetPositions = new PVector[] { currentPos.copy(), currentPos.copy() };
         targetIndex = 0;
         this.conveyor = conveyor;
+        removingComponent = false;
     }
 
     public void addComponent(Component component, PVector position) {
         this.component = component;
+        removingComponent = false;
         targetIndex = 0;
         targetPositions[0] = position.copy().add(getOffset(position));
         targetPositions[1] = position.copy();
@@ -54,9 +58,22 @@ public class Crane {
         startPos = currentPos;
     }
 
+    public void removeComponent(PVector position) {
+        target = null;
+        socket = null;
+        startPos = currentPos;
+        targetPositions[0] = position.copy().add(getOffset(position));
+        targetPositions[1] = position.copy();
+        removingComponent = true;
+    }
+
     public void setTarget(PVector position) {
         targetIndex = 0;
         startPos = currentPos;
+        targetPositions[0] = position.copy().add(getOffset(position));
+        targetPositions[1] = position.copy();
+        target = null;
+        socket = null;
     }
 
     public void setTarget(ComponentSocket socket, Product product) {
@@ -64,6 +81,7 @@ public class Crane {
         this.socket = socket;
         targetIndex = 0;
         goingToProduct = false;
+        removingComponent = false;
     }
 
     private PVector getOffset(PVector targetPosition) {
@@ -71,6 +89,19 @@ public class Crane {
     }
 
     public void update() {
+        if (Game.sketch.keyPressed && Game.sketch.key == ' ') {
+            setTarget(Game.sketch.getMousePosition());
+            render(currentPos);
+            return;
+        }
+        if (component != null && removingComponent) {
+            if (PVector.dist(currentPos, targetPositions[targetIndex]) <= 10f && targetIndex == 1) {
+                component = null;
+                showComponent = false;
+                removingComponent = false;
+                conveyor.start();
+            }
+        }
         if (component != null && !showComponent) { // Going to component
             if (PVector.dist(currentPos, targetPositions[targetIndex]) <= 10f && targetIndex == 1) { // Touching component
                 System.out.println("Enabling component rendering");
@@ -90,13 +121,8 @@ public class Crane {
             goingToProduct = true;
         }
 
-        if (hasComponent() || hasProduct()) {
-            Game.sketch.circle(5, 5, 10);
-            float moveDelta = Factory.ease(MIN_SPEED, MAX_SPEED,
-                    PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPositions[targetIndex]))
-                    * Game.deltaTime;
-            currentPos = Factory.moveTowards(currentPos, targetPositions[targetIndex], moveDelta);
-        }
+        float moveDelta = Factory.ease(MIN_SPEED, MAX_SPEED, getProgress()) * Game.deltaTime;
+        currentPos = Factory.moveTowards(currentPos, targetPositions[targetIndex], moveDelta);
         if (target != null && component != null && showComponent && targetIndex == 1) {
             if (PVector.dist(targetPositions[targetIndex], currentPos) <= 10f) {
                 socket.component = component;
@@ -132,7 +158,11 @@ public class Crane {
 
     }
 
-    public BoundingBox getBoundingBox() {
+    private float getProgress() {
+        return PVector.dist(currentPos, startPos) / PVector.dist(startPos, targetPositions[targetIndex]);
+	}
+
+	public BoundingBox getBoundingBox() {
         return new BoundingBox(currentPos, new PVector(center.width, center.height));
     }
 

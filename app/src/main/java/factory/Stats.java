@@ -1,7 +1,13 @@
 package factory;
 
+import java.util.HashMap;
+
 import processing.core.PImage;
 import processing.core.PVector;
+
+enum StatType {
+    SPEED, FIREPOWER, STORAGE, WEIGHT
+}
 
 public class Stats {
     private static PVector leftPort     = new PVector(0.248f, 0.033f);
@@ -10,6 +16,12 @@ public class Stats {
     private static PVector firePowerPos = new PVector(0.240f, 0.40f, 0.70f); 
     private static PVector storagePos   = new PVector(0.240f, 0.60f, 0.70f);
     private static PVector weightPos    = new PVector(0.240f, 0.80f, 0.70f);
+    private static HashMap<Integer, OverloadStrategy> resolvers = new HashMap<>() {{
+        put(0, OverloadStrategy.POSITIVE);
+        put(1, OverloadStrategy.POSITIVE);
+        put(2, OverloadStrategy.POSITIVE);
+        put(3, OverloadStrategy.NEGATIVE);
+    }};
     public static PImage statBackground = null;
 
     public float speed;
@@ -32,23 +44,29 @@ public class Stats {
     }
 
     public float compare(Stats other) {
-        float[] stats = new float[] {
-            other.speed / speed,
-            other.firePower / firePower,
-            other.storage / storage,
-            weight / other.weight
-        };
+        float[] stats = compareValues(other);
+        
         System.out.print("Stats: ");
         float sum = 0f;
-        for (float stat : stats) {
-            if (Float.isNaN(stat)) {
-                stat = 1f;
-            }
-            sum += stat;
-            System.out.print(stat + " ");
+        for (int i = 0; i < stats.length; i++) {
+            if (resolvers.get(i) == OverloadStrategy.NEGATIVE && stats[i] > 1f) {
+                stats[i] = 1f - stats[i] / stats[i];
+            } 
+            sum += stats[i];
+            System.out.print(stats[i] + " ");
         }
         System.out.println();
         return sum / (float) stats.length;
+    }
+
+    public float[] compareValues(Stats other) {
+        float[] stats = new float[] {
+            speed == 0f ? 1f : other.speed / speed,
+            firePower == 0f ? 1f : other.firePower / firePower,
+            storage == 0f ? 1f : other.storage / storage,
+            weight == 0f ? 1f : other.weight / weight
+        };
+        return stats;
     }
 
 	public void add(Stats stats) {
@@ -70,39 +88,32 @@ public class Stats {
     }
 
     public void render(PVector position) {
-        PVector renderPos = new PVector();
-        if (position.y + (float) statBackground.height * 0.5f < Game.sketch.height) { // Can render below
-            renderPos = PVector.add(position, new PVector(0, statBackground.height * 0.5f));
-        } else if (position.y - (float) statBackground.height * 0.5f > 0f) { // Can render above
-            renderPos = PVector.sub(position, new PVector(0, statBackground.height * 0.5f));
-        } else {
-            System.out.println("Not rendering!");
-            return;
-        }
-        renderPos.x = Factory.clamp(statBackground.width / 2, Game.sketch.width - statBackground.width / 2, renderPos.x);
+        PVector renderPos = position.copy();
+        renderPos.x = Factory.clamp(statBackground.width / 2f, Game.sketch.width - statBackground.width / 2f, renderPos.x);
+        renderPos.y = Factory.clamp(statBackground.height / 2f, Game.sketch.height - statBackground.height / 2f, renderPos.y);
         Game.sketch.image(statBackground, renderPos);
         Game.sketch.textSize(24f);
         Game.sketch.textAlign(Factory.LEFT, Factory.CENTER);
         // Speed
         Game.sketch.fill(0xFFFFFFFF);
-        Game.sketch.text("Speed", (position.x - statBackground.width * 0.5f) + statBackground.width * speedPos.x, (position.y) + statBackground.height * speedPos.y);
+        Game.sketch.text("Speed", (renderPos.x - statBackground.width * 0.5f) + statBackground.width * speedPos.x, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * speedPos.y);
         Game.sketch.fill(0xFF299FB3);
-        Game.sketch.text(Factory.round(speed), (position.x - statBackground.width * 0.5f) + statBackground.width * speedPos.z, (position.y) + statBackground.height * speedPos.y);
+        Game.sketch.text(Factory.round(speed), (renderPos.x - statBackground.width * 0.5f) + statBackground.width * speedPos.z, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * speedPos.y);
         // Fire Power
         Game.sketch.fill(0xFFFFFFFF);
-        Game.sketch.text("Fire Power", (position.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.x, (position.y) + statBackground.height * firePowerPos.y);
+        Game.sketch.text("Fire Power", (renderPos.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.x, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * firePowerPos.y);
         Game.sketch.fill(0xFF299FB3);
-        Game.sketch.text(Factory.round(firePower), (position.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.z, (position.y) + statBackground.height * firePowerPos.y);
+        Game.sketch.text(Factory.round(firePower), (renderPos.x - statBackground.width * 0.5f) + statBackground.width * firePowerPos.z, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * firePowerPos.y);
         // Storage
         Game.sketch.fill(0xFFFFFFFF);
-        Game.sketch.text("Storage", (position.x - statBackground.width * 0.5f) + statBackground.width * storagePos.x, (position.y) + statBackground.height * storagePos.y);
+        Game.sketch.text("Storage", (renderPos.x - statBackground.width * 0.5f) + statBackground.width * storagePos.x, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * storagePos.y);
         Game.sketch.fill(0xFF299FB3);
-        Game.sketch.text(Factory.round(storage), (position.x - statBackground.width * 0.5f) + statBackground.width * storagePos.z, (position.y) + statBackground.height * storagePos.y);
+        Game.sketch.text(Factory.round(storage), (renderPos.x - statBackground.width * 0.5f) + statBackground.width * storagePos.z, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * storagePos.y);
         // Weight
         Game.sketch.fill(0xFFFFFFFF);
-        Game.sketch.text("Weight", (position.x - statBackground.width * 0.5f) + statBackground.width * weightPos.x, (position.y) + statBackground.height * weightPos.y);
+        Game.sketch.text("Weight", (renderPos.x - statBackground.width * 0.5f) + statBackground.width * weightPos.x, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * weightPos.y);
         Game.sketch.fill(0xFF299FB3);
-        Game.sketch.text(Factory.round(weight), (position.x - statBackground.width * 0.5f) + statBackground.width * weightPos.z, (position.y) + statBackground.height * weightPos.y);
+        Game.sketch.text(Factory.round(weight), (renderPos.x - statBackground.width * 0.5f) + statBackground.width * weightPos.z, (renderPos.y - statBackground.height * 0.5f) + statBackground.height * weightPos.y);
         Game.sketch.fill(0xFFFFFFFF);
         Game.sketch.textAlign(Factory.CENTER, Factory.CENTER);
     }

@@ -1,8 +1,6 @@
 package factory;
 
 import java.io.File;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Set;
 
